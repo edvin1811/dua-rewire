@@ -462,6 +462,41 @@ class AppStateManager: ObservableObject {
         objectWillChange.send()
     }
 
+    /// Number of completed focus sessions today
+    var completedSessionsToday: Int {
+        let key = "completedSessionsToday"
+        let dateKey = "completedSessionsTodayDate"
+        let today = Calendar.current.startOfDay(for: Date())
+
+        if let storedDate = UserDefaults.standard.object(forKey: dateKey) as? Date,
+           Calendar.current.isDate(storedDate, inSameDayAs: today) {
+            return UserDefaults.standard.integer(forKey: key)
+        } else {
+            // Reset for new day
+            UserDefaults.standard.set(0, forKey: key)
+            UserDefaults.standard.set(today, forKey: dateKey)
+            return 0
+        }
+    }
+
+    /// Increment completed sessions when a session ends successfully
+    func incrementCompletedSessions() {
+        let key = "completedSessionsToday"
+        let dateKey = "completedSessionsTodayDate"
+        let today = Calendar.current.startOfDay(for: Date())
+
+        // Reset if new day
+        if let storedDate = UserDefaults.standard.object(forKey: dateKey) as? Date,
+           !Calendar.current.isDate(storedDate, inSameDayAs: today) {
+            UserDefaults.standard.set(0, forKey: key)
+            UserDefaults.standard.set(today, forKey: dateKey)
+        }
+
+        let current = UserDefaults.standard.integer(forKey: key)
+        UserDefaults.standard.set(current + 1, forKey: key)
+        objectWillChange.send()
+    }
+
     var hasActiveSession: Bool {
         return activeTaskSession != nil ||
                activeTimerSession != nil ||

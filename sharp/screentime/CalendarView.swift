@@ -16,6 +16,8 @@ struct CalendarView: View {
         return calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
     }()
     @State private var reportRefreshID = UUID()
+    @State private var showContent = false
+    @State private var streakDays: Int = 7
 
     @FetchRequest(
         sortDescriptors: [NSSortDescriptor(keyPath: \TaskEntity.taskCreatedAt, ascending: false)],
@@ -49,6 +51,13 @@ struct CalendarView: View {
         }
     }
 
+    private var dailyGoalProgress: Double {
+        let target = statisticsManager.dailyGoal
+        let current = statisticsManager.todayScreenTime
+        guard target > 0 else { return 0 }
+        return min(max(1 - (current / target), 0), 1)
+    }
+
     var body: some View {
         ZStack {
             ModernBackground()
@@ -57,60 +66,184 @@ struct CalendarView: View {
                 authorizationSection
             } else {
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
-                        headerSection
-                            .padding(.horizontal, 20)
-                            .padding(.top, 16)
+                    VStack(spacing: 0) {
+                        heroHeaderSection
 
-                        tabSelector
-                            .padding(.horizontal, 20)
+                        VStack(spacing: 20) {
+                            streakAndStatsRow
+                                .padding(.horizontal, 20)
+                                .padding(.top, 20)
 
-                        switch selectedTab {
-                        case .daily:
-                            dailyContent
-                        case .weekly:
-                            weeklyContent
-                        case .trends:
-                            trendsContent
+                            tabSelector
+                                .padding(.horizontal, 20)
+
+                            switch selectedTab {
+                            case .daily:
+                                dailyContent
+                            case .weekly:
+                                weeklyContent
+                            case .trends:
+                                trendsContent
+                            }
+
+                            Color.clear.frame(height: 100)
                         }
-
-                        Color.clear.frame(height: 100)
                     }
                 }
             }
         }
         .navigationBarHidden(true)
+        .onAppear {
+            withAnimation(DuoAnimation.heroEntrance.delay(0.1)) {
+                showContent = true
+            }
+        }
     }
 
-    // MARK: - Header Section
-    private var headerSection: some View {
-        HStack {
-            Text("Screen Time")
-                .font(.system(size: 32, weight: .heavy))
-                .foregroundColor(.uwTextPrimary)
+    // MARK: - Hero Header Section
+    private var heroHeaderSection: some View {
+        ZStack {
+            // Gradient background
+            LinearGradient(
+                colors: [Color.accentBlue, Color.accentBlue.darker(by: 0.2)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            // Decorative elements
+            GeometryReader { geometry in
+                // Large circle
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 200, height: 200)
+                    .offset(x: geometry.size.width - 80, y: -60)
+                    .blur(radius: 1)
+
+                // Small circle
+                Circle()
+                    .fill(Color.white.opacity(0.06))
+                    .frame(width: 80, height: 80)
+                    .offset(x: 30, y: geometry.size.height - 20)
+
+                // Floating dots
+                Circle()
+                    .fill(Color.white.opacity(0.3))
+                    .frame(width: 8, height: 8)
+                    .offset(x: geometry.size.width * 0.7, y: 40)
+                    .floating(distance: 3, duration: 1.8)
+
+                Circle()
+                    .fill(Color.white.opacity(0.25))
+                    .frame(width: 6, height: 6)
+                    .offset(x: geometry.size.width * 0.2, y: 60)
+                    .floating(distance: 4, duration: 2.2)
+            }
+
+            // Content
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(getGreeting())
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundColor(.white.opacity(0.85))
+                            .opacity(showContent ? 1 : 0)
+                            .offset(y: showContent ? 0 : 10)
+
+                        Text("Your Focus")
+                            .font(.system(size: 32, weight: .heavy))
+                            .foregroundColor(.white)
+                            .opacity(showContent ? 1 : 0)
+                            .offset(y: showContent ? 0 : 15)
+                    }
+
+                    Spacer()
+
+                    // Refresh button
+                    Button {
+                        reportRefreshID = UUID()
+                        DuoHaptics.lightTap()
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .fill(Color.white.opacity(0.2))
+                                .frame(width: 44, height: 44)
+
+                            Image(systemName: "arrow.clockwise")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .opacity(showContent ? 1 : 0)
+                    .scaleEffect(showContent ? 1 : 0.8)
+                }
+
+                // Goal progress ring and stats
+                HStack(spacing: 20) {
+                    // Progress ring
+                    DuoGoalRing(
+                        progress: dailyGoalProgress,
+                        goal: "of goal",
+                        color: .white,
+                        size: 90
+                    )
+                    .opacity(showContent ? 1 : 0)
+                    .scaleEffect(showContent ? 1 : 0.7)
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Screen Time")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.white.opacity(0.7))
+
+                            Text(formatScreenTime())
+                                .font(.system(size: 24, weight: .heavy))
+                                .foregroundColor(.white)
+                        }
+                        .opacity(showContent ? 1 : 0)
+                        .offset(x: showContent ? 0 : -20)
+
+                        HStack(spacing: 4) {
+                            Image(systemName: dailyGoalProgress >= 0.5 ? "arrow.down" : "arrow.up")
+                                .font(.system(size: 12, weight: .bold))
+                            Text(dailyGoalProgress >= 0.5 ? "On track!" : "Keep going!")
+                                .font(.system(size: 13, weight: .bold))
+                        }
+                        .foregroundColor(dailyGoalProgress >= 0.5 ? .uwSuccess : .uwAccent)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(
+                            Capsule()
+                                .fill(Color.white.opacity(0.2))
+                        )
+                        .opacity(showContent ? 1 : 0)
+                        .offset(x: showContent ? 0 : -20)
+                    }
+
+                    Spacer()
+                }
+                .padding(.top, 4)
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 24)
+            .padding(.top, 8)
+        }
+        .frame(height: 220)
+    }
+
+    // MARK: - Streak and Stats Row
+    private var streakAndStatsRow: some View {
+        HStack(spacing: 12) {
+            DuoStreakBadge(count: streakDays, label: "day streak", iconName: "flame.fill", color: .uwWarning)
+                .opacity(showContent ? 1 : 0)
+                .offset(y: showContent ? 0 : 20)
 
             Spacer()
 
-            Button {
-                reportRefreshID = UUID()
-                DuoHaptics.lightTap()
-            } label: {
-                ZStack {
-                    Circle()
-                        .fill(Color.uwPrimaryDark)
-                        .frame(width: 44, height: 44)
-                        .offset(y: 3)
-
-                    Circle()
-                        .fill(Color.uwCard)
-                        .frame(width: 44, height: 44)
-
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.uwTextPrimary)
-                }
-            }
+            DuoXPCounter(xp: completedTasksToday.count * 10 + 50)
+                .opacity(showContent ? 1 : 0)
+                .offset(y: showContent ? 0 : 20)
         }
+        .animation(DuoAnimation.cascade(index: 1), value: showContent)
     }
 
     // MARK: - Tab Selector
@@ -145,12 +278,17 @@ struct CalendarView: View {
 
             Spacer()
         }
+        .opacity(showContent ? 1 : 0)
+        .animation(DuoAnimation.cascade(index: 2), value: showContent)
     }
 
     // MARK: - Daily Content
     private var dailyContent: some View {
         VStack(spacing: 20) {
             dateSelector
+                .padding(.horizontal, 20)
+
+            dailyQuestsSection
                 .padding(.horizontal, 20)
 
             if !tasksForSelectedDate.isEmpty {
@@ -172,22 +310,99 @@ struct CalendarView: View {
         }
     }
 
-    // MARK: - Date Selector
-    private var dateSelector: some View {
-        HStack(spacing: 6) {
-            Text(formatMonthYear(selectedDate))
-                .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.uwTextSecondary)
-                .fixedSize()
+    // MARK: - Daily Quests Section
+    private var dailyQuestsSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Daily Goals")
+                    .font(.system(size: 20, weight: .heavy))
+                    .foregroundColor(.uwTextPrimary)
 
-            ForEach(getWeekDates(), id: \.self) { date in
-                datePill(date: date)
+                Spacer()
+
+                HStack(spacing: 4) {
+                    Image(systemName: "clock")
+                        .font(.system(size: 12, weight: .bold))
+                    Text("6 HOURS")
+                        .font(.system(size: 12, weight: .heavy))
+                }
+                .foregroundColor(.uwWarning)
             }
+
+            VStack(spacing: 10) {
+                DuoQuestCard(
+                    title: "Stay under screen time goal",
+                    progress: dailyGoalProgress,
+                    current: Int(dailyGoalProgress * 100),
+                    total: 100,
+                    icon: "hourglass",
+                    iconColor: .accentBlue
+                )
+
+                DuoQuestCard(
+                    title: "Complete your tasks",
+                    progress: tasksForSelectedDate.isEmpty ? 0 : Double(completedTasksToday.count) / Double(max(tasksForSelectedDate.count, 1)),
+                    current: completedTasksToday.count,
+                    total: max(tasksForSelectedDate.count, 1),
+                    icon: "checkmark.circle.fill",
+                    iconColor: .uwSuccess
+                )
+
+                DuoQuestCard(
+                    title: "Focus sessions completed",
+                    progress: min(Double(appStateManager.completedSessionsToday) / 3.0, 1.0),
+                    current: appStateManager.completedSessionsToday,
+                    total: 3,
+                    icon: "brain.head.profile",
+                    iconColor: .uwPurple
+                )
+            }
+        }
+        .opacity(showContent ? 1 : 0)
+        .animation(DuoAnimation.cascade(index: 3), value: showContent)
+    }
+
+    // MARK: - Helper Methods
+    private func getGreeting() -> String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5..<12: return "Good morning"
+        case 12..<17: return "Good afternoon"
+        case 17..<21: return "Good evening"
+        default: return "Good night"
         }
     }
 
-    private func datePill(date: Date) -> some View {
+    private func formatScreenTime() -> String {
+        let total = statisticsManager.todayScreenTime
+        let hours = Int(total) / 3600
+        let minutes = (Int(total) % 3600) / 60
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        }
+        return "\(minutes)m"
+    }
+
+    // MARK: - Date Selector
+    private var dateSelector: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(formatMonthYear(selectedDate))
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(.uwTextSecondary)
+
+            HStack(spacing: 6) {
+                ForEach(Array(getWeekDates().enumerated()), id: \.element) { index, date in
+                    datePill(date: date, index: index)
+                }
+            }
+        }
+        .opacity(showContent ? 1 : 0)
+        .animation(DuoAnimation.cascade(index: 4), value: showContent)
+    }
+
+    private func datePill(date: Date, index: Int) -> some View {
         let isSelected = Calendar.current.isDate(date, inSameDayAs: selectedDate)
+        let isToday = Calendar.current.isDateInToday(date)
 
         return Button {
             withAnimation(DuoAnimation.tabSwitch) {
@@ -196,25 +411,41 @@ struct CalendarView: View {
             DuoHaptics.selection()
         } label: {
             VStack(spacing: 4) {
-                Text(formatDayNumber(date))
-                    .font(.system(size: 13, weight: isSelected ? .heavy : .medium))
-                    .foregroundColor(isSelected ? .white : .uwTextPrimary)
-
                 Text(formatDayName(date))
                     .font(.system(size: 10, weight: .medium))
                     .foregroundColor(isSelected ? .white.opacity(0.8) : .uwTextSecondary)
+
+                ZStack {
+                    Text(formatDayNumber(date))
+                        .font(.system(size: 16, weight: isSelected ? .heavy : .semibold))
+                        .foregroundColor(isSelected ? .white : (isToday ? .uwPrimary : .uwTextPrimary))
+                }
+
+                // Today indicator dot
+                Circle()
+                    .fill(isToday && !isSelected ? Color.uwPrimary : Color.clear)
+                    .frame(width: 5, height: 5)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
+            .padding(.vertical, 12)
             .background(
                 ZStack {
                     if isSelected {
-                        Capsule()
+                        // Shadow
+                        RoundedRectangle(cornerRadius: 14)
                             .fill(Color.uwPrimaryDark)
-                            .offset(y: 2)
+                            .offset(y: 3)
 
-                        Capsule()
+                        // Main
+                        RoundedRectangle(cornerRadius: 14)
                             .fill(Color.uwPrimary)
+                    } else {
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(Color.uwCard)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .strokeBorder(isToday ? Color.uwPrimary.opacity(0.3) : Color.clear, lineWidth: 2)
+                            )
                     }
                 }
             )
@@ -241,61 +472,84 @@ struct CalendarView: View {
 
     // MARK: - Daily Usage Pattern (Stats Cards)
     private var dailyUsagePattern: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Today's Stats")
+                .font(.system(size: 20, weight: .heavy))
+                .foregroundColor(.uwTextPrimary)
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                 statsCard(
                     icon: "sun.max.fill",
                     iconColor: .uwAccent,
                     value: formatFirstPickup(),
-                    label: "First pickup"
+                    label: "First pickup",
+                    index: 0
                 )
 
                 statsCard(
                     icon: "hand.tap.fill",
                     iconColor: .uwPrimary,
                     value: "\(getTotalPickups())",
-                    label: "Total pickups"
+                    label: "Total pickups",
+                    index: 1
                 )
-            }
 
-            HStack(spacing: 12) {
                 statsCard(
                     icon: "checkmark.circle.fill",
                     iconColor: .uwSuccess,
                     value: "\(completedTasksToday.count)/\(tasksForSelectedDate.count)",
-                    label: "Tasks done"
+                    label: "Tasks done",
+                    index: 2
                 )
 
                 statsCard(
                     icon: "lock.shield.fill",
                     iconColor: .accentBlue,
                     value: formatTimeBlocked(),
-                    label: "Apps blocked"
+                    label: "Apps blocked",
+                    index: 3
                 )
             }
         }
     }
 
-    // MARK: - Stats Card (Info Display - Border, No Shadow)
-    private func statsCard(icon: String, iconColor: Color, value: String, label: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Spacer()
+    // MARK: - Stats Card (Info Display - Animated)
+    private func statsCard(icon: String, iconColor: Color, value: String, label: String, index: Int) -> some View {
+        HStack(spacing: 12) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(iconColor.opacity(0.15))
+                    .frame(width: 44, height: 44)
+
                 Image(systemName: icon)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 20, weight: .bold))
                     .foregroundColor(iconColor)
             }
 
-            Text(value)
-                .font(.system(size: 28, weight: .heavy))
-                .foregroundColor(.uwAccent)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(value)
+                    .font(.system(size: 20, weight: .heavy))
+                    .foregroundColor(.uwTextPrimary)
 
-            Text(label)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundColor(.uwTextSecondary)
+                Text(label)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.uwTextSecondary)
+            }
+
+            Spacer()
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .duoCard(padding: 16, cornerRadius: 16)
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.uwCard)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .strokeBorder(Color.uwCardShadow.opacity(0.3), lineWidth: 2)
+                )
+        )
+        .opacity(showContent ? 1 : 0)
+        .offset(y: showContent ? 0 : 20)
+        .animation(DuoAnimation.cascade(index: 6 + index), value: showContent)
     }
 
     // MARK: - Tasks Section
@@ -698,6 +952,7 @@ struct HourlyUsageChart: View {
     @State private var selectedHour: Int? = nil
     @State private var animatedBars: [Bool] = Array(repeating: false, count: 24)
     @State private var chartWidth: CGFloat = 0
+    @State private var showChart = false
 
     private var hourlyData: [Int: Int] {
         [
@@ -709,105 +964,214 @@ struct HourlyUsageChart: View {
     }
 
     private var maxMinutes: Int { max(hourlyData.values.max() ?? 60, 60) }
+    private var totalMinutes: Int { hourlyData.values.reduce(0, +) }
 
     var body: some View {
-        VStack(spacing: 8) {
-            // Tooltip
-            ZStack {
-                if let hour = selectedHour {
-                    let minutes = hourlyData[hour] ?? 0
-                    HStack(spacing: 8) {
-                        Text(formatTimeRange(hour))
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.uwTextSecondary)
-
-                        Text("\(minutes) min")
-                            .font(.system(size: 15, weight: .heavy))
-                            .foregroundColor(.uwAccent)
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.uwCardShadow)
-                                .offset(y: 3)
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.uwCard)
-                        }
-                    )
-                    .transition(.opacity.combined(with: .scale(scale: 0.9)))
-                }
-            }
-            .frame(height: 36)
-            .animation(.easeOut(duration: 0.15), value: selectedHour)
-
-            // Chart bars
-            GeometryReader { geometry in
-                HStack(alignment: .bottom, spacing: 2) {
-                    ForEach(0..<24, id: \.self) { hour in
-                        let minutes = hourlyData[hour] ?? 0
-                        let height = maxMinutes > 0 ? CGFloat(minutes) / CGFloat(maxMinutes) * 120 : 0
-
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(
-                                LinearGradient(
-                                    colors: barGradientColors(for: minutes, isSelected: selectedHour == hour),
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                            .frame(height: animatedBars[hour] ? max(height, 6) : 6)
-                            .animation(
-                                .spring(response: 0.5, dampingFraction: 0.7)
-                                .delay(Double(hour) * 0.025),
-                                value: animatedBars[hour]
-                            )
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-                .background(
-                    GeometryReader { geo in
-                        Color.clear.onAppear { chartWidth = geo.size.width }
-                    }
-                )
-                .contentShape(Rectangle())
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { value in
-                            let barWidth = chartWidth / 24
-                            let hour = Int(value.location.x / barWidth)
-                            let clampedHour = max(0, min(23, hour))
-
-                            if selectedHour != clampedHour {
-                                selectedHour = clampedHour
-                                DuoHaptics.lightTap()
-                            }
-                        }
-                        .onEnded { _ in
-                            withAnimation(.easeOut(duration: 0.2)) {
-                                selectedHour = nil
-                            }
-                        }
-                )
-            }
-            .frame(height: 120)
-
-            // X-axis labels
+        VStack(alignment: .leading, spacing: 16) {
+            // Header with title
             HStack {
-                Text("12am").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
+                Text("Hourly Activity")
+                    .font(.system(size: 20, weight: .heavy))
+                    .foregroundColor(.uwTextPrimary)
+
                 Spacer()
-                Text("6am").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
-                Spacer()
-                Text("12pm").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
-                Spacer()
-                Text("6pm").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
-                Spacer()
-                Text("11pm").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
+
+                // Peak hours indicator
+                HStack(spacing: 4) {
+                    Image(systemName: "chart.bar.fill")
+                        .font(.system(size: 12, weight: .bold))
+                    Text("Peak: 8-9 PM")
+                        .font(.system(size: 12, weight: .bold))
+                }
+                .foregroundColor(.uwWarning)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(
+                    Capsule()
+                        .fill(Color.uwWarning.opacity(0.15))
+                )
             }
+
+            VStack(spacing: 12) {
+                // Tooltip
+                ZStack {
+                    if let hour = selectedHour {
+                        let minutes = hourlyData[hour] ?? 0
+                        HStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(formatTimeRange(hour))
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.uwTextSecondary)
+
+                                Text("\(minutes) min")
+                                    .font(.system(size: 22, weight: .heavy))
+                                    .foregroundColor(.uwAccent)
+                            }
+
+                            Spacer()
+
+                            // Percentage of day
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text("\(Int((Double(minutes) / Double(totalMinutes)) * 100))%")
+                                    .font(.system(size: 16, weight: .heavy))
+                                    .foregroundColor(.uwTextPrimary)
+                                Text("of daily")
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundColor(.uwTextSecondary)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .fill(Color.uwCardShadow)
+                                    .offset(y: 3)
+                                RoundedRectangle(cornerRadius: 14)
+                                    .fill(Color.uwCard)
+                            }
+                        )
+                        .transition(.asymmetric(
+                            insertion: .opacity.combined(with: .scale(scale: 0.95).combined(with: .offset(y: 10))),
+                            removal: .opacity.combined(with: .scale(scale: 0.95))
+                        ))
+                    }
+                }
+                .frame(height: 58)
+                .animation(DuoAnimation.microBounce, value: selectedHour)
+
+                // Chart bars with gradient background
+                ZStack(alignment: .bottom) {
+                    // Horizontal grid lines
+                    VStack(spacing: 0) {
+                        ForEach(0..<4) { i in
+                            Spacer()
+                            if i < 3 {
+                                Rectangle()
+                                    .fill(Color.uwTextTertiary.opacity(0.15))
+                                    .frame(height: 1)
+                            }
+                        }
+                    }
+                    .frame(height: 140)
+
+                    // Bars
+                    GeometryReader { geometry in
+                        HStack(alignment: .bottom, spacing: 3) {
+                            ForEach(0..<24, id: \.self) { hour in
+                                let minutes = hourlyData[hour] ?? 0
+                                let height = maxMinutes > 0 ? CGFloat(minutes) / CGFloat(maxMinutes) * 140 : 0
+                                let isSelected = selectedHour == hour
+
+                                VStack(spacing: 0) {
+                                    Spacer()
+
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .fill(
+                                            LinearGradient(
+                                                colors: barGradientColors(for: minutes, isSelected: isSelected),
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            )
+                                        )
+                                        .frame(height: animatedBars[hour] ? max(height, 8) : 8)
+                                        .overlay(
+                                            // Shine effect on selected bar
+                                            RoundedRectangle(cornerRadius: 5)
+                                                .fill(
+                                                    LinearGradient(
+                                                        colors: [
+                                                            Color.white.opacity(isSelected ? 0.3 : 0),
+                                                            Color.white.opacity(0)
+                                                        ],
+                                                        startPoint: .top,
+                                                        endPoint: .center
+                                                    )
+                                                )
+                                        )
+                                        .scaleEffect(x: isSelected ? 1.15 : 1.0, y: 1.0, anchor: .bottom)
+                                        .animation(
+                                            .spring(response: 0.5, dampingFraction: 0.7)
+                                            .delay(Double(hour) * 0.02),
+                                            value: animatedBars[hour]
+                                        )
+                                        .animation(DuoAnimation.microBounce, value: isSelected)
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                        }
+                        .background(
+                            GeometryReader { geo in
+                                Color.clear.onAppear { chartWidth = geo.size.width }
+                            }
+                        )
+                        .contentShape(Rectangle())
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    let barWidth = chartWidth / 24
+                                    let hour = Int(value.location.x / barWidth)
+                                    let clampedHour = max(0, min(23, hour))
+
+                                    if selectedHour != clampedHour {
+                                        selectedHour = clampedHour
+                                        DuoHaptics.lightTap()
+                                    }
+                                }
+                                .onEnded { _ in
+                                    withAnimation(DuoAnimation.smoothSlide) {
+                                        selectedHour = nil
+                                    }
+                                }
+                        )
+                    }
+                    .frame(height: 140)
+                }
+                .padding(.horizontal, 4)
+
+                // X-axis labels
+                HStack {
+                    Text("12a")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.uwTextTertiary)
+                    Spacer()
+                    Text("6a")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.uwTextTertiary)
+                    Spacer()
+                    Text("12p")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.uwTextTertiary)
+                    Spacer()
+                    Text("6p")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.uwTextTertiary)
+                    Spacer()
+                    Text("12a")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.uwTextTertiary)
+                }
+                .padding(.horizontal, 4)
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.uwCard)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .strokeBorder(Color.uwCardShadow.opacity(0.3), lineWidth: 2)
+                    )
+            )
         }
-        .onAppear { animateBars() }
-        .onChange(of: selectedDate) {
+        .opacity(showChart ? 1 : 0)
+        .offset(y: showChart ? 0 : 30)
+        .onAppear {
+            withAnimation(DuoAnimation.cascade(index: 5)) {
+                showChart = true
+            }
+            animateBars()
+        }
+        .onChange(of: selectedDate) { _, _ in
             animatedBars = Array(repeating: false, count: 24)
             selectedHour = nil
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { animateBars() }
@@ -821,14 +1185,15 @@ struct HourlyUsageChart: View {
 
         let intensity = CGFloat(minutes) / CGFloat(maxMinutes)
 
-        if intensity < 0.2 {
-            return [Color.uwPrimary.opacity(0.3), Color.uwPrimary.opacity(0.15)]
-        } else if intensity < 0.4 {
-            return [Color.uwPrimary.opacity(0.5), Color.uwPrimary.opacity(0.25)]
-        } else if intensity < 0.6 {
+        // Gradient from cool to warm based on intensity
+        if intensity < 0.25 {
+            return [Color.accentBlue.opacity(0.6), Color.accentBlue.opacity(0.3)]
+        } else if intensity < 0.5 {
             return [Color.uwPrimary.opacity(0.7), Color.uwPrimary.opacity(0.4)]
+        } else if intensity < 0.75 {
+            return [Color.uwWarning.opacity(0.8), Color.uwWarning.opacity(0.5)]
         } else {
-            return [Color.uwPrimary.opacity(0.9), Color.uwPrimary.opacity(0.6)]
+            return [Color.uwError.opacity(0.9), Color.uwError.opacity(0.6)]
         }
     }
 
@@ -844,8 +1209,10 @@ struct HourlyUsageChart: View {
 
     private func animateBars() {
         for i in 0..<24 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.025) {
-                animatedBars[i] = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.02) {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                    animatedBars[i] = true
+                }
             }
         }
     }

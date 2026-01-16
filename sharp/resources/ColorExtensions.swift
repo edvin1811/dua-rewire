@@ -1,7 +1,7 @@
 import SwiftUI
 
-// MARK: - Unwire Design System (Duolingo-Inspired)
-// Playful, bold, rewarding - productivity should feel alive!
+// MARK: - Unwire Design System
+// Clean, branded, focused - two-color system for cohesive design
 
 // MARK: - Theme Manager
 enum UnwireColorScheme: String, CaseIterable {
@@ -24,31 +24,33 @@ class ThemeManager: ObservableObject {
 
 // MARK: - Color Extensions
 extension Color {
-    // MARK: Primary Brand Colors (Lime Green)
-    static let uwPrimary = Color(hex: "b5fc4f")              // Lime green - primary buttons
-    static let uwPrimaryDark = Color(hex: "8BC93D")          // Darker lime for shadows/pressed
-    static let uwPrimaryLight = Color(hex: "b5fc4f")         // Lighter lime for highlights
+    // MARK: - Brand Colors (Two-Color System)
+    // Primary: Deep Teal - main actions, buttons, headers
+    // Accent: Golden Yellow - highlights, achievements, progress
 
-    // MARK: Accent Colors (Golden Yellow)
-    static let uwAccent = Color(hex: "FEC80B")               // Golden yellow - progress, achievements
-    static let uwAccentDark = Color(hex: "D9A800")           // Darker yellow for shadows
+    // MARK: Primary Brand Color (Deep Teal)
+    static let uwPrimary = Color(hex: "0891B2")              // Deep teal - primary buttons, headers
+    static let uwPrimaryDark = Color(hex: "0E7490")          // Darker teal for shadows/pressed states
+    static let uwPrimaryLight = Color(hex: "22D3EE")         // Lighter teal for highlights
 
-    // MARK: Semantic Colors (High Saturation)
-    static let uwSuccess = Color(hex: "58CC02")              // Task completions, celebrations
-    static let uwWarning = Color(hex: "FF9600")              // Active sessions, timers
-    static let uwError = Color(hex: "FF4B4B")                // Destructive actions, blocks
-    static let uwPurple = Color(hex: "CE82FF")               // Special features, premium
+    // MARK: Accent Color (Golden Yellow)
+    static let uwAccent = Color(hex: "F59E0B")               // Golden yellow - achievements, progress
+    static let uwAccentDark = Color(hex: "D97706")           // Darker gold for shadows
+    static let uwAccentLight = Color(hex: "FBBF24")          // Lighter gold for highlights
 
-    // MARK: Theme-Aware Background Colors (Dark Green Style)
-    // Dark mode: Deep dark green/black backgrounds
-    // Light mode: Warm off-white backgrounds
+    // MARK: Semantic Colors (Derived from brand colors)
+    static let uwSuccess = Color(hex: "10B981")              // Emerald - completions (teal family)
+    static let uwWarning = uwAccent                          // Use accent for warnings (unified)
+    static let uwError = Color(hex: "EF4444")                // Red - destructive only
+    static let uwPurple = Color(hex: "8B5CF6")               // Purple - premium features
 
-    /// Main background - darkest layer
+    // MARK: Theme-Aware Background Colors
+    /// Main background - clean and neutral
     static var uwBackground: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "191a15")  // Deep dark green/black
-                : UIColor(hex: "FAFAF7")  // Warm off-white
+                ? UIColor(hex: "0F172A")  // Deep slate
+                : UIColor(hex: "F8FAFC")  // Clean off-white
         })
     }
 
@@ -56,7 +58,7 @@ extension Color {
     static var uwSurface: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "23251E")  // Slightly lighter dark green
+                ? UIColor(hex: "1E293B")  // Slate surface
                 : UIColor(hex: "FFFFFF")  // Pure white
         })
     }
@@ -65,17 +67,26 @@ extension Color {
     static var uwCard: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "2D3028")  // Lighter card surface with green tint
+                ? UIColor(hex: "1E293B")  // Same as surface in dark
                 : UIColor(hex: "FFFFFF")  // White cards
         })
     }
 
-    /// Card shadow color - solid, no blur
+    /// Card shadow/border color
     static var uwCardShadow: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "0F100D")  // Very dark shadow
-                : UIColor(hex: "E0E0DD")  // Warm gray shadow
+                ? UIColor(hex: "0F172A")  // Deep shadow
+                : UIColor(hex: "E2E8F0")  // Soft slate shadow
+        })
+    }
+
+    /// Subtle border color
+    static var uwBorder: Color {
+        Color(UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(hex: "334155")  // Slate border
+                : UIColor(hex: "E2E8F0")  // Light slate border
         })
     }
 
@@ -83,24 +94,24 @@ extension Color {
     static var uwTextPrimary: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "FFFFFF")  // Pure white
-                : UIColor(hex: "1C1C1E")  // Near black
+                ? UIColor(hex: "F8FAFC")  // Near white
+                : UIColor(hex: "0F172A")  // Near black
         })
     }
 
     static var uwTextSecondary: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "9CA39B")  // Muted green-gray
-                : UIColor(hex: "6E6E73")  // Medium gray
+                ? UIColor(hex: "94A3B8")  // Muted slate
+                : UIColor(hex: "64748B")  // Medium slate
         })
     }
 
     static var uwTextTertiary: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "6B7168")  // Darker muted green
-                : UIColor(hex: "AEAEB2")  // Light gray
+                ? UIColor(hex: "64748B")  // Darker slate
+                : UIColor(hex: "94A3B8")  // Light slate
         })
     }
 
@@ -109,11 +120,11 @@ extension Color {
     static let brandPrimaryDark = uwPrimaryDark
     static let brandPrimaryLight = uwPrimaryLight
     static let accentGreen = uwSuccess
-    static let accentOrange = uwWarning
+    static let accentOrange = uwAccent
     static let accentYellow = uwAccent
     static let accentRed = uwError
     static let accentPurple = uwPurple
-    static let accentBlue = Color(hex: "1CB0F6")
+    static let accentBlue = uwPrimary  // Map to primary teal
 
     static var appBackground: Color { uwBackground }
     static var appSurface: Color { uwSurface }
@@ -124,14 +135,14 @@ extension Color {
 
     // Functional color aliases
     static let successColor = uwSuccess
-    static let warningColor = uwWarning
+    static let warningColor = uwAccent
     static let errorColor = uwError
     static let activeState = uwPrimary
     static let completedState = uwSuccess
     static let blockedState = uwError
 
     // Progress colors
-    static let progressBackground = Color.white.opacity(0.2)
+    static let progressBackground = Color.uwCardShadow
     static let progressFill = uwAccent
 }
 

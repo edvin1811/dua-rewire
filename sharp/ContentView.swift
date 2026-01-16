@@ -124,15 +124,15 @@ struct MainAppView: View {
     private var tabContent: some View {
         switch selectedTab {
         case 0:
-            CalendarView() // Calendar - Screen time insights with tasks
+            HomeView() // Home - Simple welcome + key stats
         case 1:
             NewUnifiedBlockingView() // Focus - Blocking sessions
         case 2:
-            TasksView() // Tasks
+            InsightsView() // Insights - Screen time analytics (formerly CalendarView)
         case 3:
-            AccountView() // Account - Profile, goals, stats, insights
+            AccountView() // Profile - Account, goals, settings
         default:
-            CalendarView() // Default to calendar
+            HomeView()
         }
     }
 }

@@ -3,7 +3,10 @@ import FamilyControls
 import DeviceActivity
 import CoreData
 
-// MARK: - Calendar View (Insights Page)
+// MARK: - Insights View (Screen Time Analytics)
+// Alias for backwards compatibility
+typealias InsightsView = CalendarView
+
 struct CalendarView: View {
     @EnvironmentObject var appStateManager: AppStateManager
     @Environment(\.managedObjectContext) private var viewContext
@@ -66,28 +69,22 @@ struct CalendarView: View {
                 authorizationSection
             } else {
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
+                    VStack(spacing: 20) {
                         heroHeaderSection
 
-                        VStack(spacing: 20) {
-                            streakAndStatsRow
-                                .padding(.horizontal, 20)
-                                .padding(.top, 20)
+                        tabSelector
+                            .padding(.horizontal, 20)
 
-                            tabSelector
-                                .padding(.horizontal, 20)
-
-                            switch selectedTab {
-                            case .daily:
-                                dailyContent
-                            case .weekly:
-                                weeklyContent
-                            case .trends:
-                                trendsContent
-                            }
-
-                            Color.clear.frame(height: 100)
+                        switch selectedTab {
+                        case .daily:
+                            dailyContent
+                        case .weekly:
+                            weeklyContent
+                        case .trends:
+                            trendsContent
                         }
+
+                        Color.clear.frame(height: 100)
                     }
                 }
             }
@@ -102,148 +99,102 @@ struct CalendarView: View {
 
     // MARK: - Hero Header Section
     private var heroHeaderSection: some View {
-        ZStack {
-            // Gradient background
-            LinearGradient(
-                colors: [Color.accentBlue, Color.accentBlue.darker(by: 0.2)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+        VStack(spacing: 0) {
+            // Header bar
+            HStack {
+                Text("Insights")
+                    .font(.system(size: 28, weight: .bold))
+                    .foregroundColor(.uwTextPrimary)
 
-            // Decorative elements
-            GeometryReader { geometry in
-                // Large circle
-                Circle()
-                    .fill(Color.white.opacity(0.08))
-                    .frame(width: 200, height: 200)
-                    .offset(x: geometry.size.width - 80, y: -60)
-                    .blur(radius: 1)
+                Spacer()
 
-                // Small circle
-                Circle()
-                    .fill(Color.white.opacity(0.06))
-                    .frame(width: 80, height: 80)
-                    .offset(x: 30, y: geometry.size.height - 20)
-
-                // Floating dots
-                Circle()
-                    .fill(Color.white.opacity(0.3))
-                    .frame(width: 8, height: 8)
-                    .offset(x: geometry.size.width * 0.7, y: 40)
-                    .floating(distance: 3, duration: 1.8)
-
-                Circle()
-                    .fill(Color.white.opacity(0.25))
-                    .frame(width: 6, height: 6)
-                    .offset(x: geometry.size.width * 0.2, y: 60)
-                    .floating(distance: 4, duration: 2.2)
-            }
-
-            // Content
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(getGreeting())
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundColor(.white.opacity(0.85))
-                            .opacity(showContent ? 1 : 0)
-                            .offset(y: showContent ? 0 : 10)
-
-                        Text("Your Focus")
-                            .font(.system(size: 32, weight: .heavy))
-                            .foregroundColor(.white)
-                            .opacity(showContent ? 1 : 0)
-                            .offset(y: showContent ? 0 : 15)
-                    }
-
-                    Spacer()
-
-                    // Refresh button
-                    Button {
-                        reportRefreshID = UUID()
-                        DuoHaptics.lightTap()
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .fill(Color.white.opacity(0.2))
-                                .frame(width: 44, height: 44)
-
-                            Image(systemName: "arrow.clockwise")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .opacity(showContent ? 1 : 0)
-                    .scaleEffect(showContent ? 1 : 0.8)
-                }
-
-                // Goal progress ring and stats
-                HStack(spacing: 20) {
-                    // Progress ring
-                    DuoGoalRing(
-                        progress: dailyGoalProgress,
-                        goal: "of goal",
-                        color: .white,
-                        size: 90
-                    )
-                    .opacity(showContent ? 1 : 0)
-                    .scaleEffect(showContent ? 1 : 0.7)
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Screen Time")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.white.opacity(0.7))
-
-                            Text(formatScreenTime())
-                                .font(.system(size: 24, weight: .heavy))
-                                .foregroundColor(.white)
-                        }
-                        .opacity(showContent ? 1 : 0)
-                        .offset(x: showContent ? 0 : -20)
-
-                        HStack(spacing: 4) {
-                            Image(systemName: dailyGoalProgress >= 0.5 ? "arrow.down" : "arrow.up")
-                                .font(.system(size: 12, weight: .bold))
-                            Text(dailyGoalProgress >= 0.5 ? "On track!" : "Keep going!")
-                                .font(.system(size: 13, weight: .bold))
-                        }
-                        .foregroundColor(dailyGoalProgress >= 0.5 ? .uwSuccess : .uwAccent)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
+                Button {
+                    reportRefreshID = UUID()
+                    DuoHaptics.lightTap()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.uwPrimary)
+                        .padding(10)
                         .background(
-                            Capsule()
-                                .fill(Color.white.opacity(0.2))
+                            Circle()
+                                .fill(Color.uwPrimary.opacity(0.1))
                         )
-                        .opacity(showContent ? 1 : 0)
-                        .offset(x: showContent ? 0 : -20)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
+            .padding(.bottom, 20)
+
+            // Summary card
+            HStack(spacing: 20) {
+                // Goal Ring
+                ZStack {
+                    Circle()
+                        .stroke(Color.uwPrimary.opacity(0.15), lineWidth: 8)
+
+                    Circle()
+                        .trim(from: 0, to: showContent ? dailyGoalProgress : 0)
+                        .stroke(Color.uwPrimary, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                        .animation(DuoAnimation.progressUpdate.delay(0.2), value: showContent)
+
+                    VStack(spacing: 0) {
+                        Text("\(Int(dailyGoalProgress * 100))%")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(.uwTextPrimary)
+
+                        Text("of goal")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.uwTextSecondary)
+                    }
+                }
+                .frame(width: 80, height: 80)
+                .opacity(showContent ? 1 : 0)
+                .scaleEffect(showContent ? 1 : 0.8)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Screen Time")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.uwTextSecondary)
+
+                        Text(formatScreenTime())
+                            .font(.system(size: 26, weight: .bold))
+                            .foregroundColor(.uwTextPrimary)
                     }
 
-                    Spacer()
+                    HStack(spacing: 4) {
+                        Image(systemName: dailyGoalProgress >= 0.5 ? "arrow.down" : "arrow.up")
+                            .font(.system(size: 11, weight: .bold))
+                        Text(dailyGoalProgress >= 0.5 ? "On track" : "Keep going")
+                            .font(.system(size: 12, weight: .semibold))
+                    }
+                    .foregroundColor(dailyGoalProgress >= 0.5 ? .uwSuccess : .uwAccent)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule()
+                            .fill(dailyGoalProgress >= 0.5 ? Color.uwSuccess.opacity(0.12) : Color.uwAccent.opacity(0.12))
+                    )
                 }
-                .padding(.top, 4)
+                .opacity(showContent ? 1 : 0)
+                .offset(x: showContent ? 0 : -15)
+
+                Spacer()
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 24)
-            .padding(.top, 8)
+            .padding(20)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.uwCard)
+                    .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(Color.uwBorder, lineWidth: 1)
+            )
+            .padding(.horizontal, 20)
         }
-        .frame(height: 220)
-    }
-
-    // MARK: - Streak and Stats Row
-    private var streakAndStatsRow: some View {
-        HStack(spacing: 12) {
-            DuoStreakBadge(count: streakDays, label: "day streak", iconName: "flame.fill", color: .uwWarning)
-                .opacity(showContent ? 1 : 0)
-                .offset(y: showContent ? 0 : 20)
-
-            Spacer()
-
-            DuoXPCounter(xp: completedTasksToday.count * 10 + 50)
-                .opacity(showContent ? 1 : 0)
-                .offset(y: showContent ? 0 : 20)
-        }
-        .animation(DuoAnimation.cascade(index: 1), value: showContent)
     }
 
     // MARK: - Tab Selector
@@ -257,46 +208,35 @@ struct CalendarView: View {
                     DuoHaptics.selection()
                 } label: {
                     Text(tab.rawValue)
-                        .font(.system(size: 15, weight: selectedTab == tab ? .heavy : .medium))
-                        .foregroundColor(selectedTab == tab ? .white : .uwTextSecondary)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 20)
+                        .font(.system(size: 14, weight: selectedTab == tab ? .semibold : .medium))
+                        .foregroundColor(selectedTab == tab ? .uwPrimary : .uwTextSecondary)
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 16)
                         .background(
-                            ZStack {
-                                if selectedTab == tab {
-                                    Capsule()
-                                        .fill(Color.uwPrimaryDark)
-                                        .offset(y: 3)
-
-                                    Capsule()
-                                        .fill(Color.uwPrimary)
-                                }
-                            }
+                            Capsule()
+                                .fill(selectedTab == tab ? Color.uwPrimary.opacity(0.12) : Color.clear)
                         )
                 }
             }
 
             Spacer()
         }
+        .padding(4)
+        .background(
+            Capsule()
+                .fill(Color.uwCard)
+                .overlay(
+                    Capsule()
+                        .strokeBorder(Color.uwBorder, lineWidth: 1)
+                )
+        )
         .opacity(showContent ? 1 : 0)
-        .animation(DuoAnimation.cascade(index: 2), value: showContent)
     }
 
     // MARK: - Daily Content
     private var dailyContent: some View {
         VStack(spacing: 20) {
             dateSelector
-                .padding(.horizontal, 20)
-
-            dailyQuestsSection
-                .padding(.horizontal, 20)
-
-            if !tasksForSelectedDate.isEmpty {
-                tasksSection
-                    .padding(.horizontal, 20)
-            }
-
-            screenTimeCards
                 .padding(.horizontal, 20)
 
             usageChart
@@ -385,19 +325,18 @@ struct CalendarView: View {
 
     // MARK: - Date Selector
     private var dateSelector: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
             Text(formatMonthYear(selectedDate))
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundColor(.uwTextSecondary)
 
-            HStack(spacing: 6) {
+            HStack(spacing: 8) {
                 ForEach(Array(getWeekDates().enumerated()), id: \.element) { index, date in
                     datePill(date: date, index: index)
                 }
             }
         }
         .opacity(showContent ? 1 : 0)
-        .animation(DuoAnimation.cascade(index: 4), value: showContent)
     }
 
     private func datePill(date: Date, index: Int) -> some View {
@@ -413,41 +352,26 @@ struct CalendarView: View {
             VStack(spacing: 4) {
                 Text(formatDayName(date))
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(isSelected ? .white.opacity(0.8) : .uwTextSecondary)
+                    .foregroundColor(isSelected ? .white.opacity(0.9) : .uwTextTertiary)
 
-                ZStack {
-                    Text(formatDayNumber(date))
-                        .font(.system(size: 16, weight: isSelected ? .heavy : .semibold))
-                        .foregroundColor(isSelected ? .white : (isToday ? .uwPrimary : .uwTextPrimary))
-                }
+                Text(formatDayNumber(date))
+                    .font(.system(size: 16, weight: isSelected ? .bold : .medium))
+                    .foregroundColor(isSelected ? .white : (isToday ? .uwPrimary : .uwTextPrimary))
 
-                // Today indicator dot
+                // Today indicator
                 Circle()
                     .fill(isToday && !isSelected ? Color.uwPrimary : Color.clear)
-                    .frame(width: 5, height: 5)
+                    .frame(width: 4, height: 4)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
+            .padding(.vertical, 10)
             .background(
-                ZStack {
-                    if isSelected {
-                        // Shadow
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(Color.uwPrimaryDark)
-                            .offset(y: 3)
-
-                        // Main
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(Color.uwPrimary)
-                    } else {
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(Color.uwCard)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 14)
-                                    .strokeBorder(isToday ? Color.uwPrimary.opacity(0.3) : Color.clear, lineWidth: 2)
-                            )
-                    }
-                }
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? Color.uwPrimary : Color.uwCard)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(isSelected ? Color.clear : Color.uwBorder, lineWidth: 1)
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -474,7 +398,7 @@ struct CalendarView: View {
     private var dailyUsagePattern: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("Today's Stats")
-                .font(.system(size: 20, weight: .heavy))
+                .font(.system(size: 18, weight: .bold))
                 .foregroundColor(.uwTextPrimary)
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
@@ -482,53 +406,50 @@ struct CalendarView: View {
                     icon: "sun.max.fill",
                     iconColor: .uwAccent,
                     value: formatFirstPickup(),
-                    label: "First pickup",
-                    index: 0
+                    label: "First pickup"
                 )
 
                 statsCard(
                     icon: "hand.tap.fill",
                     iconColor: .uwPrimary,
                     value: "\(getTotalPickups())",
-                    label: "Total pickups",
-                    index: 1
+                    label: "Total pickups"
                 )
 
                 statsCard(
                     icon: "checkmark.circle.fill",
                     iconColor: .uwSuccess,
                     value: "\(completedTasksToday.count)/\(tasksForSelectedDate.count)",
-                    label: "Tasks done",
-                    index: 2
+                    label: "Tasks done"
                 )
 
                 statsCard(
-                    icon: "lock.shield.fill",
-                    iconColor: .accentBlue,
+                    icon: "clock.fill",
+                    iconColor: .uwPrimary,
                     value: formatTimeBlocked(),
-                    label: "Apps blocked",
-                    index: 3
+                    label: "Focus time"
                 )
             }
         }
+        .opacity(showContent ? 1 : 0)
     }
 
-    // MARK: - Stats Card (Info Display - Animated)
-    private func statsCard(icon: String, iconColor: Color, value: String, label: String, index: Int) -> some View {
+    // MARK: - Stats Card
+    private func statsCard(icon: String, iconColor: Color, value: String, label: String) -> some View {
         HStack(spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(iconColor.opacity(0.15))
-                    .frame(width: 44, height: 44)
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(iconColor.opacity(0.12))
+                    .frame(width: 40, height: 40)
 
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(iconColor)
             }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(value)
-                    .font(.system(size: 20, weight: .heavy))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.uwTextPrimary)
 
                 Text(label)
@@ -540,16 +461,13 @@ struct CalendarView: View {
         }
         .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: 14)
                 .fill(Color.uwCard)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .strokeBorder(Color.uwCardShadow.opacity(0.3), lineWidth: 2)
-                )
         )
-        .opacity(showContent ? 1 : 0)
-        .offset(y: showContent ? 0 : 20)
-        .animation(DuoAnimation.cascade(index: 6 + index), value: showContent)
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .strokeBorder(Color.uwBorder, lineWidth: 1)
+        )
     }
 
     // MARK: - Tasks Section
@@ -971,7 +889,7 @@ struct HourlyUsageChart: View {
             // Header with title
             HStack {
                 Text("Hourly Activity")
-                    .font(.system(size: 20, weight: .heavy))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.uwTextPrimary)
 
                 Spacer()
@@ -979,16 +897,16 @@ struct HourlyUsageChart: View {
                 // Peak hours indicator
                 HStack(spacing: 4) {
                     Image(systemName: "chart.bar.fill")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 11, weight: .semibold))
                     Text("Peak: 8-9 PM")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 11, weight: .semibold))
                 }
-                .foregroundColor(.uwWarning)
+                .foregroundColor(.uwAccent)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background(
                     Capsule()
-                        .fill(Color.uwWarning.opacity(0.15))
+                        .fill(Color.uwAccent.opacity(0.12))
                 )
             }
 
@@ -1004,8 +922,8 @@ struct HourlyUsageChart: View {
                                     .foregroundColor(.uwTextSecondary)
 
                                 Text("\(minutes) min")
-                                    .font(.system(size: 22, weight: .heavy))
-                                    .foregroundColor(.uwAccent)
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundColor(.uwPrimary)
                             }
 
                             Spacer()
@@ -1013,32 +931,28 @@ struct HourlyUsageChart: View {
                             // Percentage of day
                             VStack(alignment: .trailing, spacing: 2) {
                                 Text("\(Int((Double(minutes) / Double(totalMinutes)) * 100))%")
-                                    .font(.system(size: 16, weight: .heavy))
+                                    .font(.system(size: 16, weight: .bold))
                                     .foregroundColor(.uwTextPrimary)
                                 Text("of daily")
                                     .font(.system(size: 10, weight: .medium))
                                     .foregroundColor(.uwTextSecondary)
                             }
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
                         .background(
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(Color.uwCardShadow)
-                                    .offset(y: 3)
-                                RoundedRectangle(cornerRadius: 14)
-                                    .fill(Color.uwCard)
-                            }
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.uwSurface)
+                                .shadow(color: Color.black.opacity(0.08), radius: 4, x: 0, y: 2)
                         )
                         .transition(.asymmetric(
-                            insertion: .opacity.combined(with: .scale(scale: 0.95).combined(with: .offset(y: 10))),
+                            insertion: .opacity.combined(with: .scale(scale: 0.95)),
                             removal: .opacity.combined(with: .scale(scale: 0.95))
                         ))
                     }
                 }
-                .frame(height: 58)
-                .animation(DuoAnimation.microBounce, value: selectedHour)
+                .frame(height: 52)
+                .animation(.spring(response: 0.2, dampingFraction: 0.8), value: selectedHour)
 
                 // Chart bars with gradient background
                 ZStack(alignment: .bottom) {
@@ -1155,18 +1069,17 @@ struct HourlyUsageChart: View {
             }
             .padding(16)
             .background(
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: 16)
                     .fill(Color.uwCard)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .strokeBorder(Color.uwCardShadow.opacity(0.3), lineWidth: 2)
-                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(Color.uwBorder, lineWidth: 1)
             )
         }
         .opacity(showChart ? 1 : 0)
-        .offset(y: showChart ? 0 : 30)
         .onAppear {
-            withAnimation(DuoAnimation.cascade(index: 5)) {
+            withAnimation(DuoAnimation.progressUpdate.delay(0.2)) {
                 showChart = true
             }
             animateBars()
@@ -1185,15 +1098,11 @@ struct HourlyUsageChart: View {
 
         let intensity = CGFloat(minutes) / CGFloat(maxMinutes)
 
-        // Gradient from cool to warm based on intensity
-        if intensity < 0.25 {
-            return [Color.accentBlue.opacity(0.6), Color.accentBlue.opacity(0.3)]
-        } else if intensity < 0.5 {
+        // Simple two-color gradient: teal for low usage, gold for high usage
+        if intensity < 0.5 {
             return [Color.uwPrimary.opacity(0.7), Color.uwPrimary.opacity(0.4)]
-        } else if intensity < 0.75 {
-            return [Color.uwWarning.opacity(0.8), Color.uwWarning.opacity(0.5)]
         } else {
-            return [Color.uwError.opacity(0.9), Color.uwError.opacity(0.6)]
+            return [Color.uwAccent.opacity(0.85), Color.uwAccent.opacity(0.5)]
         }
     }
 

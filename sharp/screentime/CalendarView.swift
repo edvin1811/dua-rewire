@@ -1,0 +1,870 @@
+import SwiftUI
+import FamilyControls
+import DeviceActivity
+import CoreData
+
+// MARK: - Calendar View (Insights Page)
+struct CalendarView: View {
+    @EnvironmentObject var appStateManager: AppStateManager
+    @Environment(\.managedObjectContext) private var viewContext
+    @StateObject private var statisticsManager = StatisticsManager.shared
+
+    @State private var selectedTab: CalendarTab = .daily
+    @State private var selectedDate = Date()
+    @State private var selectedWeek: Date = {
+        let calendar = Calendar.current
+        return calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
+    }()
+    @State private var reportRefreshID = UUID()
+
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \TaskEntity.taskCreatedAt, ascending: false)],
+        animation: .default
+    ) private var tasks: FetchedResults<TaskEntity>
+
+    var completedTasksToday: [TaskEntity] {
+        let today = Calendar.current.startOfDay(for: selectedDate)
+        return tasks.filter {
+            $0.taskIsCompleted &&
+            Calendar.current.isDate($0.taskCompletedAt ?? Date(), inSameDayAs: today)
+        }
+    }
+
+    var tasksForSelectedDate: [TaskEntity] {
+        let calendar = Calendar.current
+        let selectedWeekday = calendar.component(.weekday, from: selectedDate)
+
+        return tasks.filter { task in
+            if let scheduledDate = task.value(forKey: "taskScheduledDate") as? Date {
+                if let pattern = task.value(forKey: "taskRecurrencePattern") as? String,
+                   let daysString = task.value(forKey: "taskRecurrenceDays") as? String {
+                    let recurringDays = daysString.split(separator: ",").compactMap { Int($0) }
+                    return recurringDays.contains(selectedWeekday)
+                } else {
+                    return calendar.isDate(scheduledDate, inSameDayAs: selectedDate)
+                }
+            }
+            guard let taskDate = task.taskCreatedAt else { return false }
+            return calendar.isDate(taskDate, inSameDayAs: selectedDate)
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            ModernBackground()
+
+            if appStateManager.authorizationState != .granted {
+                authorizationSection
+            } else {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 20) {
+                        headerSection
+                            .padding(.horizontal, 20)
+                            .padding(.top, 16)
+
+                        tabSelector
+                            .padding(.horizontal, 20)
+
+                        switch selectedTab {
+                        case .daily:
+                            dailyContent
+                        case .weekly:
+                            weeklyContent
+                        case .trends:
+                            trendsContent
+                        }
+
+                        Color.clear.frame(height: 100)
+                    }
+                }
+            }
+        }
+        .navigationBarHidden(true)
+    }
+
+    // MARK: - Header Section
+    private var headerSection: some View {
+        HStack {
+            Text("Screen Time")
+                .font(.system(size: 32, weight: .heavy))
+                .foregroundColor(.uwTextPrimary)
+
+            Spacer()
+
+            Button {
+                reportRefreshID = UUID()
+                DuoHaptics.lightTap()
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.uwPrimaryDark)
+                        .frame(width: 44, height: 44)
+                        .offset(y: 3)
+
+                    Circle()
+                        .fill(Color.uwCard)
+                        .frame(width: 44, height: 44)
+
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.uwTextPrimary)
+                }
+            }
+        }
+    }
+
+    // MARK: - Tab Selector
+    private var tabSelector: some View {
+        HStack(spacing: 8) {
+            ForEach(CalendarTab.allCases, id: \.self) { tab in
+                Button {
+                    withAnimation(DuoAnimation.tabSwitch) {
+                        selectedTab = tab
+                    }
+                    DuoHaptics.selection()
+                } label: {
+                    Text(tab.rawValue)
+                        .font(.system(size: 15, weight: selectedTab == tab ? .heavy : .medium))
+                        .foregroundColor(selectedTab == tab ? .white : .uwTextSecondary)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 20)
+                        .background(
+                            ZStack {
+                                if selectedTab == tab {
+                                    Capsule()
+                                        .fill(Color.uwPrimaryDark)
+                                        .offset(y: 3)
+
+                                    Capsule()
+                                        .fill(Color.uwPrimary)
+                                }
+                            }
+                        )
+                }
+            }
+
+            Spacer()
+        }
+    }
+
+    // MARK: - Daily Content
+    private var dailyContent: some View {
+        VStack(spacing: 20) {
+            dateSelector
+                .padding(.horizontal, 20)
+
+            if !tasksForSelectedDate.isEmpty {
+                tasksSection
+                    .padding(.horizontal, 20)
+            }
+
+            screenTimeCards
+                .padding(.horizontal, 20)
+
+            usageChart
+                .padding(.horizontal, 20)
+
+            dailyUsagePattern
+                .padding(.horizontal, 20)
+
+            mostUsedAppsSection
+                .padding(.horizontal, 20)
+        }
+    }
+
+    // MARK: - Date Selector
+    private var dateSelector: some View {
+        HStack(spacing: 6) {
+            Text(formatMonthYear(selectedDate))
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(.uwTextSecondary)
+                .fixedSize()
+
+            ForEach(getWeekDates(), id: \.self) { date in
+                datePill(date: date)
+            }
+        }
+    }
+
+    private func datePill(date: Date) -> some View {
+        let isSelected = Calendar.current.isDate(date, inSameDayAs: selectedDate)
+
+        return Button {
+            withAnimation(DuoAnimation.tabSwitch) {
+                selectedDate = date
+            }
+            DuoHaptics.selection()
+        } label: {
+            VStack(spacing: 4) {
+                Text(formatDayNumber(date))
+                    .font(.system(size: 13, weight: isSelected ? .heavy : .medium))
+                    .foregroundColor(isSelected ? .white : .uwTextPrimary)
+
+                Text(formatDayName(date))
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(isSelected ? .white.opacity(0.8) : .uwTextSecondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(
+                ZStack {
+                    if isSelected {
+                        Capsule()
+                            .fill(Color.uwPrimaryDark)
+                            .offset(y: 2)
+
+                        Capsule()
+                            .fill(Color.uwPrimary)
+                    }
+                }
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+
+    // MARK: - Screen Time Cards
+    private var screenTimeCards: some View {
+        DeviceActivityReport(
+            DeviceActivityReport.Context(rawValue: "CalendarScreenTime"),
+            filter: getCurrentFilter()
+        )
+        .frame(height: 120)
+        .id(reportRefreshID)
+    }
+
+    // MARK: - Usage Chart
+    private var usageChart: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HourlyUsageChart(selectedDate: selectedDate)
+        }
+    }
+
+    // MARK: - Daily Usage Pattern (Stats Cards)
+    private var dailyUsagePattern: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                statsCard(
+                    icon: "sun.max.fill",
+                    iconColor: .uwAccent,
+                    value: formatFirstPickup(),
+                    label: "First pickup"
+                )
+
+                statsCard(
+                    icon: "hand.tap.fill",
+                    iconColor: .uwPrimary,
+                    value: "\(getTotalPickups())",
+                    label: "Total pickups"
+                )
+            }
+
+            HStack(spacing: 12) {
+                statsCard(
+                    icon: "checkmark.circle.fill",
+                    iconColor: .uwSuccess,
+                    value: "\(completedTasksToday.count)/\(tasksForSelectedDate.count)",
+                    label: "Tasks done"
+                )
+
+                statsCard(
+                    icon: "lock.shield.fill",
+                    iconColor: .accentBlue,
+                    value: formatTimeBlocked(),
+                    label: "Apps blocked"
+                )
+            }
+        }
+    }
+
+    // MARK: - Stats Card
+    private func statsCard(icon: String, iconColor: Color, value: String, label: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Spacer()
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(iconColor)
+            }
+
+            Text(value)
+                .font(.system(size: 28, weight: .heavy))
+                .foregroundColor(.uwAccent)
+
+            Text(label)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.uwTextSecondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.black.opacity(0.1))
+                    .offset(y: 3)
+
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.uwCard)
+            }
+        )
+    }
+
+    // MARK: - Tasks Section
+    @ViewBuilder
+    private var tasksSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Tasks")
+                    .font(.system(size: 20, weight: .heavy))
+                    .foregroundColor(.uwTextPrimary)
+
+                Spacer()
+
+                Text("\(completedTasksToday.count)/\(tasksForSelectedDate.count)")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.uwPrimary)
+            }
+
+            VStack(spacing: 8) {
+                ForEach(tasksForSelectedDate, id: \.objectID) { task in
+                    taskRow(task: task)
+                }
+            }
+        }
+    }
+
+    private func taskRow(task: TaskEntity) -> some View {
+        HStack(spacing: 14) {
+            Button {
+                toggleTask(task)
+                DuoHaptics.success()
+            } label: {
+                ZStack {
+                    if task.taskIsCompleted {
+                        Circle()
+                            .fill(Color.uwPrimaryDark)
+                            .frame(width: 28, height: 28)
+                            .offset(y: 2)
+                    }
+
+                    Circle()
+                        .fill(task.taskIsCompleted ? Color.uwPrimary : Color.uwCard)
+                        .frame(width: 28, height: 28)
+                        .overlay(
+                            Circle()
+                                .stroke(task.taskIsCompleted ? Color.clear : Color.uwTextTertiary, lineWidth: 2)
+                        )
+
+                    if task.taskIsCompleted {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .buttonStyle(PlainButtonStyle())
+
+            Text(task.taskTitle ?? "Untitled")
+                .font(.system(size: 16, weight: task.taskIsCompleted ? .medium : .bold))
+                .foregroundColor(task.taskIsCompleted ? .uwTextSecondary : .uwTextPrimary)
+                .strikethrough(task.taskIsCompleted, color: .uwTextSecondary)
+
+            Spacer()
+        }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .background(
+            ZStack {
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(Color.black.opacity(0.08))
+                    .offset(y: 2)
+
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(Color.uwCard)
+            }
+        )
+    }
+
+    // MARK: - Most Used Apps Section
+    private var mostUsedAppsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Most used apps")
+                .font(.system(size: 18, weight: .heavy))
+                .foregroundColor(.uwTextPrimary)
+
+            DeviceActivityReport(
+                DeviceActivityReport.Context(rawValue: "CalendarMostUsedApps"),
+                filter: getCurrentFilter()
+            )
+            .frame(minHeight: 350)
+            .id("\(reportRefreshID)-\(selectedDate)")
+        }
+    }
+
+    // MARK: - Weekly Content
+    private var weeklyContent: some View {
+        VStack(spacing: 20) {
+            weekSelector
+                .padding(.horizontal, 20)
+
+            progressChart
+                .padding(.horizontal, 20)
+
+            weeklySummaryCards
+                .padding(.horizontal, 20)
+        }
+    }
+
+    // MARK: - Week Selector
+    private var weekSelector: some View {
+        HStack(spacing: 8) {
+            ForEach(getWeeks(), id: \.self) { week in
+                weekPill(week: week)
+            }
+        }
+    }
+
+    private func weekPill(week: Date) -> some View {
+        let isSelected = isSameWeek(week, as: selectedWeek)
+        let weekRange = getWeekRange(for: week)
+        let weekNumber = Calendar.current.component(.weekOfYear, from: week)
+
+        return Button {
+            withAnimation(DuoAnimation.tabSwitch) {
+                selectedWeek = week
+            }
+            DuoHaptics.selection()
+        } label: {
+            Text("W\(weekNumber)")
+                .font(.system(size: 14, weight: isSelected ? .heavy : .medium))
+                .foregroundColor(isSelected ? .white : .uwTextPrimary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(
+                    ZStack {
+                        if isSelected {
+                            Capsule()
+                                .fill(Color.uwPrimaryDark)
+                                .offset(y: 2)
+
+                            Capsule()
+                                .fill(Color.uwPrimary)
+                        } else {
+                            Capsule()
+                                .fill(Color.uwCard)
+                        }
+                    }
+                )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+
+    // MARK: - Progress Chart
+    private var progressChart: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Your progress")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.uwTextPrimary)
+
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.uwTextTertiary.opacity(0.2))
+                .frame(height: 200)
+                .overlay(
+                    Text("Progress Chart")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.uwTextSecondary)
+                )
+        }
+        .duoCard()
+    }
+
+    // MARK: - Weekly Summary Cards
+    private var weeklySummaryCards: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Weekly Summary")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.uwTextPrimary)
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Total Time Saved")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.uwTextSecondary)
+
+                Text(formatTimeSaved())
+                    .font(.system(size: 32, weight: .heavy))
+                    .foregroundColor(.uwAccent)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .duoCard()
+
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Most Distracted")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.uwTextSecondary)
+
+                    Text(formatMostDistractedTime())
+                        .font(.system(size: 24, weight: .heavy))
+                        .foregroundColor(.uwTextPrimary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .duoCard()
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Avg Screen Time")
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(.uwTextSecondary)
+
+                    Text(formatAvgScreenTime())
+                        .font(.system(size: 24, weight: .heavy))
+                        .foregroundColor(.uwTextPrimary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .duoCard()
+            }
+        }
+    }
+
+    // MARK: - Trends Content
+    private var trendsContent: some View {
+        VStack(spacing: 20) {
+            VStack(spacing: 16) {
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(.system(size: 60, weight: .medium))
+                    .foregroundColor(.uwTextTertiary)
+
+                Text("Trends coming soon")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.uwTextSecondary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 60)
+        }
+        .padding(.horizontal, 20)
+    }
+
+    // MARK: - Authorization Section
+    private var authorizationSection: some View {
+        VStack(spacing: 32) {
+            Spacer()
+
+            VStack(spacing: 24) {
+                ZStack {
+                    Circle()
+                        .fill(Color.uwPrimary.opacity(0.15))
+                        .frame(width: 100, height: 100)
+
+                    Image(systemName: "shield.checkered")
+                        .font(.system(size: 48, weight: .bold))
+                        .foregroundColor(.uwPrimary)
+                }
+
+                VStack(spacing: 12) {
+                    Text("Screen Time Access")
+                        .font(.system(size: 28, weight: .heavy))
+                        .foregroundColor(.uwTextPrimary)
+
+                    Text("Track your app usage and stay focused.")
+                        .font(.system(size: 16))
+                        .foregroundColor(.uwTextSecondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                }
+
+                Button {
+                    appStateManager.requestAuthorizationIfNeeded()
+                    DuoHaptics.buttonTap()
+                } label: {
+                    HStack(spacing: 8) {
+                        Text("Grant Access")
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                }
+                .buttonStyle(DuoPrimaryButton())
+                .padding(.horizontal, 40)
+            }
+            .duoCard()
+            .padding(.horizontal, 20)
+
+            Spacer()
+        }
+    }
+
+    // MARK: - Helper Methods
+    private func getCurrentFilter() -> DeviceActivityFilter {
+        guard let todayInterval = Calendar.current.dateInterval(of: .day, for: selectedDate) else {
+            fatalError("Could not create date interval")
+        }
+
+        return DeviceActivityFilter(
+            segment: .daily(during: todayInterval),
+            users: .all,
+            devices: .init([.iPhone, .iPad])
+        )
+    }
+
+    private func toggleTask(_ task: TaskEntity) {
+        withAnimation(DuoAnimation.checkboxPop) {
+            task.taskIsCompleted.toggle()
+            task.taskCompletedAt = task.taskIsCompleted ? Date() : nil
+
+            do {
+                try viewContext.save()
+            } catch {
+                print("Error saving task: \(error)")
+            }
+        }
+    }
+
+    private func formatFirstPickup() -> String { "7:30 AM" }
+    private func getTotalPickups() -> Int { 47 }
+
+    private func formatTimeBlocked() -> String {
+        let blockedSeconds = appStateManager.totalBlockedTimeToday
+        let hours = Int(blockedSeconds) / 3600
+        let minutes = (Int(blockedSeconds) % 3600) / 60
+        if hours > 0 { return "\(hours)h \(minutes)m" }
+        else if minutes > 0 { return "\(minutes)m" }
+        else { return "0m" }
+    }
+
+    private func formatTimeSaved() -> String {
+        let saved = statisticsManager.timeSavedThisWeek
+        let hours = Int(saved) / 3600
+        let minutes = (Int(saved) % 3600) / 60
+        return "\(hours)h \(minutes)m"
+    }
+
+    private func formatMostDistractedTime() -> String { "4 PM" }
+
+    private func formatAvgScreenTime() -> String {
+        let avg = statisticsManager.weeklyAverage
+        let hours = Int(avg) / 3600
+        let minutes = (Int(avg) % 3600) / 60
+        return "\(hours)h \(minutes)m"
+    }
+
+    private func formatMonthYear(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy MMM"
+        return formatter.string(from: date)
+    }
+
+    private func formatDayNumber(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d"
+        return formatter.string(from: date)
+    }
+
+    private func formatDayName(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE"
+        return formatter.string(from: date)
+    }
+
+    private func getWeekDates() -> [Date] {
+        let calendar = Calendar.current
+        let today = Date()
+        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: today)?.start ?? today
+        return (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: startOfWeek) }
+    }
+
+    private func getWeeks() -> [Date] {
+        let calendar = Calendar.current
+        var weeks: [Date] = []
+        for i in 0..<4 {
+            if let weekStart = calendar.dateInterval(of: .weekOfYear, for: Date())?.start,
+               let week = calendar.date(byAdding: .weekOfYear, value: i - 1, to: weekStart) {
+                weeks.append(week)
+            }
+        }
+        return weeks
+    }
+
+    private func getWeekRange(for date: Date) -> (start: Date, end: Date) {
+        let calendar = Calendar.current
+        guard let interval = calendar.dateInterval(of: .weekOfYear, for: date) else {
+            return (date, date)
+        }
+        return (interval.start, interval.end)
+    }
+
+    private func isSameWeek(_ date1: Date, as date2: Date) -> Bool {
+        Calendar.current.isDate(date1, equalTo: date2, toGranularity: .weekOfYear)
+    }
+}
+
+// MARK: - Calendar Tab Enum
+enum CalendarTab: String, CaseIterable {
+    case daily = "Daily"
+    case weekly = "Weekly"
+    case trends = "Trends"
+}
+
+// MARK: - Hourly Usage Chart
+struct HourlyUsageChart: View {
+    let selectedDate: Date
+    @State private var selectedHour: Int? = nil
+    @State private var animatedBars: [Bool] = Array(repeating: false, count: 24)
+    @State private var chartWidth: CGFloat = 0
+
+    private var hourlyData: [Int: Int] {
+        [
+            0: 5, 1: 2, 2: 0, 3: 0, 4: 0, 5: 3,
+            6: 12, 7: 25, 8: 35, 9: 28, 10: 22, 11: 18,
+            12: 42, 13: 38, 14: 30, 15: 25, 16: 45, 17: 52,
+            18: 48, 19: 55, 20: 60, 21: 45, 22: 30, 23: 15
+        ]
+    }
+
+    private var maxMinutes: Int { max(hourlyData.values.max() ?? 60, 60) }
+
+    var body: some View {
+        VStack(spacing: 8) {
+            // Tooltip
+            ZStack {
+                if let hour = selectedHour {
+                    let minutes = hourlyData[hour] ?? 0
+                    HStack(spacing: 8) {
+                        Text(formatTimeRange(hour))
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundColor(.uwTextSecondary)
+
+                        Text("\(minutes) min")
+                            .font(.system(size: 15, weight: .heavy))
+                            .foregroundColor(.uwAccent)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.uwCardShadow)
+                                .offset(y: 3)
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.uwCard)
+                        }
+                    )
+                    .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                }
+            }
+            .frame(height: 36)
+            .animation(.easeOut(duration: 0.15), value: selectedHour)
+
+            // Chart bars
+            GeometryReader { geometry in
+                HStack(alignment: .bottom, spacing: 2) {
+                    ForEach(0..<24, id: \.self) { hour in
+                        let minutes = hourlyData[hour] ?? 0
+                        let height = maxMinutes > 0 ? CGFloat(minutes) / CGFloat(maxMinutes) * 120 : 0
+
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: barGradientColors(for: minutes, isSelected: selectedHour == hour),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .frame(height: animatedBars[hour] ? max(height, 6) : 6)
+                            .animation(
+                                .spring(response: 0.5, dampingFraction: 0.7)
+                                .delay(Double(hour) * 0.025),
+                                value: animatedBars[hour]
+                            )
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .background(
+                    GeometryReader { geo in
+                        Color.clear.onAppear { chartWidth = geo.size.width }
+                    }
+                )
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            let barWidth = chartWidth / 24
+                            let hour = Int(value.location.x / barWidth)
+                            let clampedHour = max(0, min(23, hour))
+
+                            if selectedHour != clampedHour {
+                                selectedHour = clampedHour
+                                DuoHaptics.lightTap()
+                            }
+                        }
+                        .onEnded { _ in
+                            withAnimation(.easeOut(duration: 0.2)) {
+                                selectedHour = nil
+                            }
+                        }
+                )
+            }
+            .frame(height: 120)
+
+            // X-axis labels
+            HStack {
+                Text("12am").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
+                Spacer()
+                Text("6am").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
+                Spacer()
+                Text("12pm").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
+                Spacer()
+                Text("6pm").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
+                Spacer()
+                Text("11pm").font(.system(size: 10, weight: .medium)).foregroundColor(.uwTextSecondary)
+            }
+        }
+        .onAppear { animateBars() }
+        .onChange(of: selectedDate) {
+            animatedBars = Array(repeating: false, count: 24)
+            selectedHour = nil
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { animateBars() }
+        }
+    }
+
+    private func barGradientColors(for minutes: Int, isSelected: Bool) -> [Color] {
+        if isSelected {
+            return [Color.uwAccent, Color.uwAccentDark]
+        }
+
+        let intensity = CGFloat(minutes) / CGFloat(maxMinutes)
+
+        if intensity < 0.2 {
+            return [Color.uwPrimary.opacity(0.3), Color.uwPrimary.opacity(0.15)]
+        } else if intensity < 0.4 {
+            return [Color.uwPrimary.opacity(0.5), Color.uwPrimary.opacity(0.25)]
+        } else if intensity < 0.6 {
+            return [Color.uwPrimary.opacity(0.7), Color.uwPrimary.opacity(0.4)]
+        } else {
+            return [Color.uwPrimary.opacity(0.9), Color.uwPrimary.opacity(0.6)]
+        }
+    }
+
+    private func formatTimeRange(_ hour: Int) -> String {
+        func format(_ h: Int) -> String {
+            if h == 0 { return "12 AM" }
+            if h < 12 { return "\(h) AM" }
+            if h == 12 { return "12 PM" }
+            return "\(h - 12) PM"
+        }
+        return "\(format(hour)) - \(format((hour + 1) % 24))"
+    }
+
+    private func animateBars() {
+        for i in 0..<24 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.025) {
+                animatedBars[i] = true
+            }
+        }
+    }
+}
+
+#Preview {
+    CalendarView()
+        .environmentObject(AppStateManager())
+        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+}

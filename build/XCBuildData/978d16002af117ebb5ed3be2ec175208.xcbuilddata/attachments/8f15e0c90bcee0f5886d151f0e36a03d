@@ -1,0 +1,89 @@
+{
+  "" : {
+    "diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor-primary.dia",
+    "emit-module-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor-primary-emit-module.dia",
+    "pch" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor-primary.swiftdeps"
+  },
+  "/Users/edvin/Desktop/sharp2/ActivityMonitor/AccountActivityView.swift" : {
+    "const-values" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/AccountActivityView.swiftconstvalues",
+    "dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/AccountActivityView.d",
+    "diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/AccountActivityView.dia",
+    "index-unit-output-path" : "/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/AccountActivityView.o",
+    "llvm-bc" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/AccountActivityView.bc",
+    "object" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/AccountActivityView.o",
+    "swift-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/AccountActivityView.swiftdeps",
+    "swiftmodule" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/AccountActivityView~partial.swiftmodule"
+  },
+  "/Users/edvin/Desktop/sharp2/ActivityMonitor/ActivityMonitor.swift" : {
+    "const-values" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor.swiftconstvalues",
+    "dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor.d",
+    "diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor.dia",
+    "index-unit-output-path" : "/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor.o",
+    "llvm-bc" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor.bc",
+    "object" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor.o",
+    "swift-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor.swiftdeps",
+    "swiftmodule" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ActivityMonitor~partial.swiftmodule"
+  },
+  "/Users/edvin/Desktop/sharp2/ActivityMonitor/ScreenTimeModels.swift" : {
+    "const-values" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeModels.swiftconstvalues",
+    "dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeModels.d",
+    "diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeModels.dia",
+    "index-unit-output-path" : "/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeModels.o",
+    "llvm-bc" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeModels.bc",
+    "object" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeModels.o",
+    "swift-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeModels.swiftdeps",
+    "swiftmodule" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeModels~partial.swiftmodule"
+  },
+  "/Users/edvin/Desktop/sharp2/ActivityMonitor/TotalActivityReport.swift" : {
+    "const-values" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityReport.swiftconstvalues",
+    "dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityReport.d",
+    "diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityReport.dia",
+    "index-unit-output-path" : "/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityReport.o",
+    "llvm-bc" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityReport.bc",
+    "object" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityReport.o",
+    "swift-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityReport.swiftdeps",
+    "swiftmodule" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityReport~partial.swiftmodule"
+  },
+  "/Users/edvin/Desktop/sharp2/ActivityMonitor/TotalActivityView.swift" : {
+    "const-values" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityView.swiftconstvalues",
+    "dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityView.d",
+    "diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityView.dia",
+    "index-unit-output-path" : "/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityView.o",
+    "llvm-bc" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityView.bc",
+    "object" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityView.o",
+    "swift-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityView.swiftdeps",
+    "swiftmodule" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/TotalActivityView~partial.swiftmodule"
+  },
+  "/Users/edvin/Desktop/sharp2/sharp/screentime/ProductivityCategorization.swift" : {
+    "const-values" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityCategorization.swiftconstvalues",
+    "dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityCategorization.d",
+    "diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityCategorization.dia",
+    "index-unit-output-path" : "/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityCategorization.o",
+    "llvm-bc" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityCategorization.bc",
+    "object" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityCategorization.o",
+    "swift-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityCategorization.swiftdeps",
+    "swiftmodule" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityCategorization~partial.swiftmodule"
+  },
+  "/Users/edvin/Desktop/sharp2/sharp/screentime/ProductivityInsightsView.swift" : {
+    "const-values" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityInsightsView.swiftconstvalues",
+    "dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityInsightsView.d",
+    "diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityInsightsView.dia",
+    "index-unit-output-path" : "/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityInsightsView.o",
+    "llvm-bc" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityInsightsView.bc",
+    "object" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityInsightsView.o",
+    "swift-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityInsightsView.swiftdeps",
+    "swiftmodule" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ProductivityInsightsView~partial.swiftmodule"
+  },
+  "/Users/edvin/Desktop/sharp2/sharp/screentime/ScreenTimeDataManager.swift" : {
+    "const-values" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeDataManager.swiftconstvalues",
+    "dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeDataManager.d",
+    "diagnostics" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeDataManager.dia",
+    "index-unit-output-path" : "/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeDataManager.o",
+    "llvm-bc" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeDataManager.bc",
+    "object" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeDataManager.o",
+    "swift-dependencies" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeDataManager.swiftdeps",
+    "swiftmodule" : "/Users/edvin/Desktop/sharp2/build/sharp.build/Debug-iphonesimulator/ActivityMonitor.build/Objects-normal/arm64/ScreenTimeDataManager~partial.swiftmodule"
+  }
+}

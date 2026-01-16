@@ -1,0 +1,98 @@
+[
+  {
+    "typeName": "ActivityMonitor.TotalActivityReportExtension",
+    "mangledTypeName": "15ActivityMonitor05TotalA15ReportExtensionV",
+    "kind": "struct",
+    "file": "/Users/edvin/Desktop/sharp2/ActivityMonitor/ActivityMonitor.swift",
+    "line": 5,
+    "conformances": [
+      "_DeviceActivity_SwiftUI.DeviceActivityReportExtension",
+      "ExtensionFoundation.AppExtension",
+      "Swift.Sendable",
+      "Swift.BitwiseCopyable"
+    ],
+    "allConformances": [
+      {
+        "protocolName": "_DeviceActivity_SwiftUI.DeviceActivityReportExtension",
+        "conformanceDefiningModule": "ActivityMonitor"
+      },
+      {
+        "protocolName": "ExtensionFoundation.AppExtension",
+        "conformanceDefiningModule": "ActivityMonitor"
+      },
+      {
+        "protocolName": "Swift.Sendable",
+        "conformanceDefiningModule": "ActivityMonitor"
+      },
+      {
+        "protocolName": "Swift.BitwiseCopyable",
+        "conformanceDefiningModule": "ActivityMonitor"
+      }
+    ],
+    "associatedTypeAliases": [
+      {
+        "typeAliasName": "Body",
+        "substitutedTypeName": "some _DeviceActivity_SwiftUI.DeviceActivityReportScene",
+        "substitutedMangledTypeName": "15ActivityMonitor05TotalA15ReportExtensionV4bodyQrvpQOy_Qo_",
+        "opaqueTypeProtocolRequirements": [
+          "_DeviceActivity_SwiftUI.DeviceActivityReportScene"
+        ],
+        "opaqueTypeSameTypeRequirements": []
+      },
+      {
+        "typeAliasName": "Configuration",
+        "substitutedTypeName": "ExtensionKit.AppExtensionSceneConfiguration",
+        "substitutedMangledTypeName": "12ExtensionKit03AppA18SceneConfigurationV"
+      }
+    ],
+    "properties": [
+      {
+        "label": "body",
+        "type": "some _DeviceActivity_SwiftUI.DeviceActivityReportScene",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "false",
+        "isComputed": "true",
+        "file": "/Users/edvin/Desktop/sharp2/ActivityMonitor/ActivityMonitor.swift",
+        "line": 6,
+        "valueKind": "Builder",
+        "value": {
+          "type": "_DeviceActivity_SwiftUI.DeviceActivityReportBuilder",
+          "members": [
+            {
+              "kind": "buildExpression",
+              "element": {
+                "valueKind": "InitCall",
+                "value": {
+                  "type": "ActivityMonitor.TotalActivityReport",
+                  "arguments": [
+                    {
+                      "label": "content",
+                      "type": "(ActivityMonitor.TotalActivityConfiguration) -> ActivityMonitor.TotalActivityView",
+                      "valueKind": "Runtime"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "kind": "buildExpression",
+              "element": {
+                "valueKind": "InitCall",
+                "value": {
+                  "type": "ActivityMonitor.AccountActivityReport",
+                  "arguments": [
+                    {
+                      "label": "content",
+                      "type": "(ActivityMonitor.TotalActivityConfiguration) -> ActivityMonitor.AccountActivityView",
+                      "valueKind": "Runtime"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Background Modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>location</string>
+	</array>
+
+	<!-- Location Permission Strings -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Sharp needs your location to block apps when you enter or leave specific places.</string>
+
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Sharp needs location access even when closed to monitor location-based blocking sessions in the background.</string>
+
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Sharp monitors your location in the background to automatically block or unblock apps based on your location.</string>
+
+	<!-- HealthKit Permission Strings -->
+	<key>NSHealthShareUsageDescription</key>
+	<string>Sharp needs access to your step count to unlock apps when you reach your daily step goal.</string>
+
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Sharp may update health data based on your app usage patterns.</string>
+
+	<!-- Background Task Identifiers -->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.coolstudio.sharp.sessioncheck</string>
+		<string>com.coolstudio.sharp.stepsupdate</string>
+	</array>
+
+	<!-- Live Activities Support -->
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+
+	<!-- UI Configuration -->
+	<key>UIDesignRequiresCompatibility</key>
+	<true/>
+
+	<!-- Custom Fonts -->
+	<key>UIAppFonts</key>
+	<array>
+		<string>DIN-Next-Rounded-LT-W01-Bold.ttf</string>
+		<string>DIN-Next-Rounded-LT-W01-Light.ttf</string>
+		<string>DIN-Next-Rounded-LT-W01-Medium.ttf</string>
+		<string>DINNext.ttf</string>
+	</array>
+</dict>
+</plist>

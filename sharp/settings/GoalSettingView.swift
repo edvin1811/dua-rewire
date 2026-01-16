@@ -92,7 +92,7 @@ struct GoalSettingView: View {
         }
     }
 
-    // MARK: - Goal Display
+    // MARK: - Goal Display (Info Display - Border, No Shadow)
     private var goalDisplaySection: some View {
         VStack(spacing: 12) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -111,7 +111,7 @@ struct GoalSettingView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 32)
-        .duo3DCard(padding: 32, cornerRadius: 24)
+        .duoCard(padding: 32, cornerRadius: 24)
     }
 
     // MARK: - Slider Section

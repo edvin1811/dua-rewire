@@ -76,7 +76,7 @@ struct ScreenTimeView: View {
     @ViewBuilder
     private var focusSummaryCard: some View {
         HStack(spacing: 16) {
-            // Focus Time Card
+            // Focus Time Card (Info Display - Border, No Shadow)
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 8) {
                     Image(systemName: "lock.shield.fill")
@@ -97,9 +97,9 @@ struct ScreenTimeView: View {
                     .foregroundColor(.uwTextSecondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .duo3DCard(padding: 20, cornerRadius: 20)
+            .duoCard(padding: 20, cornerRadius: 20)
 
-            // Tasks Done Card
+            // Tasks Done Card (Info Display - Border, No Shadow)
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 8) {
                     Image(systemName: "checkmark.circle.fill")
@@ -126,7 +126,7 @@ struct ScreenTimeView: View {
                     .foregroundColor(.uwTextSecondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .duo3DCard(padding: 20, cornerRadius: 20)
+            .duoCard(padding: 20, cornerRadius: 20)
         }
     }
 

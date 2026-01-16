@@ -276,7 +276,7 @@ struct CalendarView: View {
         }
     }
 
-    // MARK: - Stats Card
+    // MARK: - Stats Card (Info Display - Border, No Shadow)
     private func statsCard(icon: String, iconColor: Color, value: String, label: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -295,17 +295,7 @@ struct CalendarView: View {
                 .foregroundColor(.uwTextSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.black.opacity(0.1))
-                    .offset(y: 3)
-
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.uwCard)
-            }
-        )
+        .duoCard(padding: 16, cornerRadius: 16)
     }
 
     // MARK: - Tasks Section
@@ -373,14 +363,12 @@ struct CalendarView: View {
         .padding(.vertical, 12)
         .padding(.horizontal, 16)
         .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color.black.opacity(0.08))
-                    .offset(y: 2)
-
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color.uwCard)
-            }
+            RoundedRectangle(cornerRadius: 14)
+                .fill(Color.uwCard)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .strokeBorder(Color.uwCardShadow.opacity(0.3), lineWidth: 2)
+                )
         )
     }
 

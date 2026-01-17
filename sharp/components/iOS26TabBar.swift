@@ -86,7 +86,7 @@ struct iOS26TabBar: View {
     }
 }
 
-// MARK: - Tab Button
+// MARK: - Tab Button (Duolingo-style vibrant tabs)
 struct TabButton: View {
     let tab: TabItem
     let isSelected: Bool
@@ -99,42 +99,44 @@ struct TabButton: View {
         Button(action: onTap) {
             VStack(spacing: 4) {
                 ZStack {
-                    // Selected indicator
+                    // Selected indicator - vibrant lime green
                     if isSelected {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.uwPrimary.opacity(0.12))
-                            .frame(width: 52, height: 32)
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(Color.uwSuccess.opacity(0.15))
+                            .frame(width: 56, height: 34)
                             .matchedGeometryEffect(id: "tabIndicator", in: namespace)
                     }
 
                     Image(systemName: isSelected ? tab.activeIcon : tab.icon)
-                        .font(.system(size: 20, weight: isSelected ? .semibold : .regular))
-                        .foregroundColor(isSelected ? .uwPrimary : .uwTextTertiary)
+                        .font(.system(size: 22, weight: isSelected ? .bold : .medium))
+                        .foregroundColor(isSelected ? .uwSuccess : .uwTextTertiary)
+                        .scaleEffect(isSelected ? 1.1 : 1.0)
+                        .animation(DuoAnimation.microBounce, value: isSelected)
                 }
-                .frame(height: 32)
+                .frame(height: 34)
 
                 Text(tab.title)
-                    .font(.system(size: 10, weight: isSelected ? .semibold : .medium))
-                    .foregroundColor(isSelected ? .uwPrimary : .uwTextTertiary)
+                    .font(.system(size: 11, weight: isSelected ? .bold : .medium))
+                    .foregroundColor(isSelected ? .uwSuccess : .uwTextTertiary)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 6)
-            .scaleEffect(isPressed ? 0.95 : 1.0)
+            .scaleEffect(isPressed ? 0.92 : 1.0)
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
-                    withAnimation(.easeOut(duration: 0.1)) { isPressed = true }
+                    withAnimation(.easeOut(duration: 0.08)) { isPressed = true }
                 }
                 .onEnded { _ in
-                    withAnimation(.easeOut(duration: 0.1)) { isPressed = false }
+                    withAnimation(DuoAnimation.microBounce) { isPressed = false }
                 }
         )
     }
 }
 
-// MARK: - Quick Add Button
+// MARK: - Quick Add Button (Duolingo 3D lime green button)
 struct QuickAddButton: View {
     let onTap: () -> Void
     @State private var isPressed = false
@@ -142,26 +144,26 @@ struct QuickAddButton: View {
     var body: some View {
         Button(action: onTap) {
             ZStack {
-                // Shadow
+                // 3D Shadow - darker green
                 Circle()
-                    .fill(Color.uwPrimaryDark)
-                    .frame(width: 52, height: 52)
-                    .offset(y: isPressed ? 0 : 3)
+                    .fill(Color.uwSuccessDark)
+                    .frame(width: 56, height: 56)
+                    .offset(y: isPressed ? 0 : 4)
 
-                // Main button
+                // Main button - vibrant lime green
                 Circle()
-                    .fill(Color.uwPrimary)
-                    .frame(width: 52, height: 52)
-                    .offset(y: isPressed ? 2 : 0)
+                    .fill(Color.uwSuccess)
+                    .frame(width: 56, height: 56)
+                    .offset(y: isPressed ? 3 : 0)
 
-                // Icon
+                // Icon - white plus
                 Image(systemName: "plus")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.system(size: 24, weight: .black))
                     .foregroundColor(.white)
-                    .offset(y: isPressed ? 2 : 0)
+                    .offset(y: isPressed ? 3 : 0)
             }
             .scaleEffect(isPressed ? 0.95 : 1.0)
-            .animation(.spring(response: 0.2, dampingFraction: 0.6), value: isPressed)
+            .animation(.spring(response: 0.15, dampingFraction: 0.5), value: isPressed)
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(

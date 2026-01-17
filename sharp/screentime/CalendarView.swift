@@ -97,13 +97,13 @@ struct CalendarView: View {
         }
     }
 
-    // MARK: - Hero Header Section
+    // MARK: - Hero Header Section (Duolingo-style vibrant)
     private var heroHeaderSection: some View {
         VStack(spacing: 0) {
             // Header bar
             HStack {
                 Text("Insights")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.system(size: 30, weight: .heavy))
                     .foregroundColor(.uwTextPrimary)
 
                 Spacer()
@@ -113,12 +113,12 @@ struct CalendarView: View {
                     DuoHaptics.lightTap()
                 } label: {
                     Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.uwPrimary)
-                        .padding(10)
+                        .padding(12)
                         .background(
                             Circle()
-                                .fill(Color.uwPrimary.opacity(0.1))
+                                .fill(Color.uwPrimary.opacity(0.15))
                         )
                 }
             }
@@ -126,56 +126,63 @@ struct CalendarView: View {
             .padding(.top, 16)
             .padding(.bottom, 20)
 
-            // Summary card
+            // Summary card - Duolingo-style with 3D effect
             HStack(spacing: 20) {
-                // Goal Ring
+                // Goal Ring - vibrant lime green
                 ZStack {
                     Circle()
-                        .stroke(Color.uwPrimary.opacity(0.15), lineWidth: 8)
+                        .stroke(Color.uwSuccess.opacity(0.2), lineWidth: 10)
 
                     Circle()
                         .trim(from: 0, to: showContent ? dailyGoalProgress : 0)
-                        .stroke(Color.uwPrimary, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                        .stroke(
+                            LinearGradient(
+                                colors: [Color.uwSuccess, Color.uwSuccessLight],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                        )
                         .rotationEffect(.degrees(-90))
                         .animation(DuoAnimation.progressUpdate.delay(0.2), value: showContent)
 
                     VStack(spacing: 0) {
                         Text("\(Int(dailyGoalProgress * 100))%")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(.uwTextPrimary)
+                            .font(.system(size: 24, weight: .heavy))
+                            .foregroundColor(.uwSuccess)
 
                         Text("of goal")
-                            .font(.system(size: 10, weight: .medium))
+                            .font(.system(size: 10, weight: .semibold))
                             .foregroundColor(.uwTextSecondary)
                     }
                 }
-                .frame(width: 80, height: 80)
+                .frame(width: 90, height: 90)
                 .opacity(showContent ? 1 : 0)
                 .scaleEffect(showContent ? 1 : 0.8)
 
                 VStack(alignment: .leading, spacing: 12) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Screen Time")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: 12, weight: .semibold))
                             .foregroundColor(.uwTextSecondary)
 
                         Text(formatScreenTime())
-                            .font(.system(size: 26, weight: .bold))
+                            .font(.system(size: 28, weight: .heavy))
                             .foregroundColor(.uwTextPrimary)
                     }
 
                     HStack(spacing: 4) {
                         Image(systemName: dailyGoalProgress >= 0.5 ? "arrow.down" : "arrow.up")
-                            .font(.system(size: 11, weight: .bold))
-                        Text(dailyGoalProgress >= 0.5 ? "On track" : "Keep going")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .bold))
+                        Text(dailyGoalProgress >= 0.5 ? "On track!" : "Keep going")
+                            .font(.system(size: 13, weight: .bold))
                     }
                     .foregroundColor(dailyGoalProgress >= 0.5 ? .uwSuccess : .uwAccent)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
                     .background(
                         Capsule()
-                            .fill(dailyGoalProgress >= 0.5 ? Color.uwSuccess.opacity(0.12) : Color.uwAccent.opacity(0.12))
+                            .fill(dailyGoalProgress >= 0.5 ? Color.uwSuccess.opacity(0.15) : Color.uwAccent.opacity(0.15))
                     )
                 }
                 .opacity(showContent ? 1 : 0)
@@ -185,13 +192,15 @@ struct CalendarView: View {
             }
             .padding(20)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.uwCard)
-                    .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(Color.uwBorder, lineWidth: 1)
+                ZStack {
+                    // 3D shadow
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.uwCardShadow)
+                        .offset(y: 4)
+
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.uwCard)
+                }
             )
             .padding(.horizontal, 20)
         }
@@ -1098,11 +1107,17 @@ struct HourlyUsageChart: View {
 
         let intensity = CGFloat(minutes) / CGFloat(maxMinutes)
 
-        // Simple two-color gradient: teal for low usage, gold for high usage
-        if intensity < 0.5 {
-            return [Color.uwPrimary.opacity(0.7), Color.uwPrimary.opacity(0.4)]
+        // Duolingo-style vibrant gradient
+        // Low usage: Duolingo blue, High usage: lime green (good = less usage)
+        if intensity < 0.3 {
+            // Low usage - vibrant green (good!)
+            return [Color.uwSuccess, Color.uwSuccessDark]
+        } else if intensity < 0.6 {
+            // Medium usage - Duolingo blue
+            return [Color.uwPrimary.opacity(0.9), Color.uwPrimaryDark.opacity(0.7)]
         } else {
-            return [Color.uwAccent.opacity(0.85), Color.uwAccent.opacity(0.5)]
+            // High usage - golden yellow (warning)
+            return [Color.uwAccent, Color.uwAccentDark]
         }
     }
 

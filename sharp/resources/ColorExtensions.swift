@@ -24,33 +24,38 @@ class ThemeManager: ObservableObject {
 
 // MARK: - Color Extensions
 extension Color {
-    // MARK: - Brand Colors (Two-Color System)
-    // Primary: Deep Teal - main actions, buttons, headers
-    // Accent: Golden Yellow - highlights, achievements, progress
+    // MARK: - Brand Colors (Duolingo-Inspired Vibrant System)
+    // Primary: Duolingo Blue - headers, secondary actions
+    // Success: Lime Green - main CTA buttons, completions (THE signature color)
+    // Accent: Golden Yellow - highlights, achievements, streaks
 
-    // MARK: Primary Brand Color (Deep Teal)
-    static let uwPrimary = Color(hex: "0891B2")              // Deep teal - primary buttons, headers
-    static let uwPrimaryDark = Color(hex: "0E7490")          // Darker teal for shadows/pressed states
-    static let uwPrimaryLight = Color(hex: "22D3EE")         // Lighter teal for highlights
+    // MARK: Primary Brand Color (Duolingo Blue)
+    static let uwPrimary = Color(hex: "1CB0F6")              // Bright Duolingo blue
+    static let uwPrimaryDark = Color(hex: "1899D6")          // Darker blue for shadows
+    static let uwPrimaryLight = Color(hex: "7ED4FC")         // Lighter blue for highlights
+
+    // MARK: Success/Action Color (Lime Green - THE Duolingo Button Color)
+    static let uwSuccess = Color(hex: "58CC02")              // Vibrant lime green - main buttons
+    static let uwSuccessDark = Color(hex: "58A700")          // Darker green for 3D shadows
+    static let uwSuccessLight = Color(hex: "89E219")         // Lighter green for highlights
 
     // MARK: Accent Color (Golden Yellow)
-    static let uwAccent = Color(hex: "F59E0B")               // Golden yellow - achievements, progress
-    static let uwAccentDark = Color(hex: "D97706")           // Darker gold for shadows
-    static let uwAccentLight = Color(hex: "FBBF24")          // Lighter gold for highlights
+    static let uwAccent = Color(hex: "FFC800")               // Bright golden yellow - streaks, XP
+    static let uwAccentDark = Color(hex: "E5A000")           // Darker gold for shadows
+    static let uwAccentLight = Color(hex: "FFD84D")          // Lighter gold for highlights
 
-    // MARK: Semantic Colors (Derived from brand colors)
-    static let uwSuccess = Color(hex: "10B981")              // Emerald - completions (teal family)
-    static let uwWarning = uwAccent                          // Use accent for warnings (unified)
-    static let uwError = Color(hex: "EF4444")                // Red - destructive only
-    static let uwPurple = Color(hex: "8B5CF6")               // Purple - premium features
+    // MARK: Semantic Colors
+    static let uwWarning = Color(hex: "FF9600")              // Orange for warnings
+    static let uwError = Color(hex: "FF4B4B")                // Bright red - destructive
+    static let uwPurple = Color(hex: "CE82FF")               // Vibrant purple - premium/special
 
-    // MARK: Theme-Aware Background Colors
-    /// Main background - clean and neutral
+    // MARK: Theme-Aware Background Colors (Duolingo-style dark theme)
+    /// Main background - deep charcoal (Duolingo dark mode)
     static var uwBackground: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "0F172A")  // Deep slate
-                : UIColor(hex: "F8FAFC")  // Clean off-white
+                ? UIColor(hex: "131F24")  // Duolingo dark charcoal
+                : UIColor(hex: "FFFFFF")  // Clean white
         })
     }
 
@@ -58,8 +63,8 @@ extension Color {
     static var uwSurface: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "1E293B")  // Slate surface
-                : UIColor(hex: "FFFFFF")  // Pure white
+                ? UIColor(hex: "1A2B32")  // Slightly lighter charcoal
+                : UIColor(hex: "F7F7F7")  // Light gray
         })
     }
 
@@ -67,17 +72,17 @@ extension Color {
     static var uwCard: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "1E293B")  // Same as surface in dark
+                ? UIColor(hex: "1A2B32")  // Card dark
                 : UIColor(hex: "FFFFFF")  // White cards
         })
     }
 
-    /// Card shadow/border color
+    /// Card shadow/border color (solid shadows for 3D effect)
     static var uwCardShadow: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "0F172A")  // Deep shadow
-                : UIColor(hex: "E2E8F0")  // Soft slate shadow
+                ? UIColor(hex: "0D1518")  // Deep shadow
+                : UIColor(hex: "E5E5E5")  // Light gray shadow
         })
     }
 
@@ -85,33 +90,33 @@ extension Color {
     static var uwBorder: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "334155")  // Slate border
-                : UIColor(hex: "E2E8F0")  // Light slate border
+                ? UIColor(hex: "2D4047")  // Teal-tinted border
+                : UIColor(hex: "E5E5E5")  // Light gray border
         })
     }
 
-    // MARK: Theme-Aware Text Colors
+    // MARK: Theme-Aware Text Colors (High contrast Duolingo style)
     static var uwTextPrimary: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "F8FAFC")  // Near white
-                : UIColor(hex: "0F172A")  // Near black
+                ? UIColor(hex: "FFFFFF")  // Pure white
+                : UIColor(hex: "3C3C3C")  // Dark gray (not pure black)
         })
     }
 
     static var uwTextSecondary: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "94A3B8")  // Muted slate
-                : UIColor(hex: "64748B")  // Medium slate
+                ? UIColor(hex: "AFAFAF")  // Medium gray
+                : UIColor(hex: "777777")  // Medium gray
         })
     }
 
     static var uwTextTertiary: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "64748B")  // Darker slate
-                : UIColor(hex: "94A3B8")  // Light slate
+                ? UIColor(hex: "6E6E6E")  // Dim gray
+                : UIColor(hex: "AFAFAF")  // Light gray
         })
     }
 
@@ -119,12 +124,12 @@ extension Color {
     static let brandPrimary = uwPrimary
     static let brandPrimaryDark = uwPrimaryDark
     static let brandPrimaryLight = uwPrimaryLight
-    static let accentGreen = uwSuccess
-    static let accentOrange = uwAccent
-    static let accentYellow = uwAccent
-    static let accentRed = uwError
-    static let accentPurple = uwPurple
-    static let accentBlue = uwPrimary  // Map to primary teal
+    static let accentGreen = uwSuccess                        // Lime green
+    static let accentOrange = uwWarning                       // Orange
+    static let accentYellow = uwAccent                        // Golden yellow
+    static let accentRed = uwError                            // Bright red
+    static let accentPurple = uwPurple                        // Vibrant purple
+    static let accentBlue = uwPrimary                         // Duolingo blue
 
     static var appBackground: Color { uwBackground }
     static var appSurface: Color { uwSurface }
@@ -135,15 +140,19 @@ extension Color {
 
     // Functional color aliases
     static let successColor = uwSuccess
-    static let warningColor = uwAccent
+    static let warningColor = uwWarning
     static let errorColor = uwError
-    static let activeState = uwPrimary
-    static let completedState = uwSuccess
+    static let activeState = uwSuccess                        // Lime green for active
+    static let completedState = uwSuccess                     // Lime green for completed
     static let blockedState = uwError
 
-    // Progress colors
+    // Progress colors - use accent yellow for that Duolingo feel
     static let progressBackground = Color.uwCardShadow
-    static let progressFill = uwAccent
+    static let progressFill = uwAccent                        // Golden yellow
+
+    // Streak/fire colors
+    static let streakOrange = Color(hex: "FF9600")            // Fire orange
+    static let streakRed = Color(hex: "FF4B4B")               // Fire red
 }
 
 // MARK: - Hex Color Extension
@@ -361,17 +370,28 @@ enum DuoHaptics {
 // MARK: - The Signature Duolingo Button Style
 /// 3D button with solid shadow that presses down - THE most important visual element
 /// No blur shadows, no opacity tricks - just solid colors for that cartoony look
+/// DEFAULT: Lime green (uwSuccess) - the iconic Duolingo button color
 struct Duo3DButtonStyle: ButtonStyle {
     let color: Color
     let shadowColor: Color
-    var cornerRadius: CGFloat = 12  // Less rounded
-    var shadowOffset: CGFloat = 5
-    var buttonHeight: CGFloat = 48  // Thinner button
+    let textColor: Color
+    var cornerRadius: CGFloat = 16  // Rounded like Duolingo
+    var shadowOffset: CGFloat = 4
+    var buttonHeight: CGFloat = 52
 
-    init(color: Color = .uwPrimary, shadowColor: Color? = nil) {
+    init(color: Color = .uwSuccess, shadowColor: Color? = nil, textColor: Color = .white) {
         self.color = color
-        // Use a proper darker shade, not opacity
-        self.shadowColor = shadowColor ?? color.darker(by: 0.25)
+        // Use the proper dark variant for the shadow
+        if color == .uwSuccess {
+            self.shadowColor = shadowColor ?? .uwSuccessDark
+        } else if color == .uwPrimary {
+            self.shadowColor = shadowColor ?? .uwPrimaryDark
+        } else if color == .uwAccent {
+            self.shadowColor = shadowColor ?? .uwAccentDark
+        } else {
+            self.shadowColor = shadowColor ?? color.darker(by: 0.25)
+        }
+        self.textColor = textColor
     }
 
     func makeBody(configuration: Configuration) -> some View {
@@ -392,8 +412,8 @@ struct Duo3DButtonStyle: ButtonStyle {
                 .offset(y: pressOffset)
                 .overlay(
                     configuration.label
-                        .font(.custom("DINNextRoundedLTW01-Bold", size: 17))
-                        .foregroundColor(.black)  // Black text on lime green
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundColor(textColor)
                         .offset(y: pressOffset)
                 )
         }
@@ -406,37 +426,50 @@ struct Duo3DButtonStyle: ButtonStyle {
 }
 
 // MARK: - Button Style Variants
+/// PRIMARY BUTTON: Lime green - THE Duolingo button (use for main CTAs)
 struct DuoPrimaryButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        Duo3DButtonStyle(color: .uwPrimary, shadowColor: .uwPrimaryDark)
+        Duo3DButtonStyle(color: .uwSuccess, shadowColor: .uwSuccessDark, textColor: .white)
             .makeBody(configuration: configuration)
     }
 }
 
+/// Success button (same as primary - lime green)
 struct DuoSuccessButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        Duo3DButtonStyle(color: .uwSuccess, shadowColor: Color(hex: "3D9001"))
+        Duo3DButtonStyle(color: .uwSuccess, shadowColor: .uwSuccessDark, textColor: .white)
             .makeBody(configuration: configuration)
     }
 }
 
+/// Blue button - secondary actions
+struct DuoBlueButton: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Duo3DButtonStyle(color: .uwPrimary, shadowColor: .uwPrimaryDark, textColor: .white)
+            .makeBody(configuration: configuration)
+    }
+}
+
+/// Warning button - orange
 struct DuoWarningButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        Duo3DButtonStyle(color: .uwWarning, shadowColor: Color(hex: "CC7700"))
+        Duo3DButtonStyle(color: .uwWarning, shadowColor: Color(hex: "CC7000"), textColor: .white)
             .makeBody(configuration: configuration)
     }
 }
 
+/// Danger button - red
 struct DuoDangerButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        Duo3DButtonStyle(color: .uwError, shadowColor: Color(hex: "CC3333"))
+        Duo3DButtonStyle(color: .uwError, shadowColor: Color(hex: "CC3333"), textColor: .white)
             .makeBody(configuration: configuration)
     }
 }
 
+/// Accent button - golden yellow
 struct DuoAccentButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        Duo3DButtonStyle(color: .uwAccent, shadowColor: .uwAccentDark)
+        Duo3DButtonStyle(color: .uwAccent, shadowColor: .uwAccentDark, textColor: Color(hex: "3C3C3C"))
             .makeBody(configuration: configuration)
     }
 }
@@ -578,7 +611,7 @@ struct DuoCardButtonStyle: ButtonStyle {
 // MARK: - Pill Button Style (for tab bars, segmented controls)
 struct DuoPillButtonStyle: ButtonStyle {
     let isSelected: Bool
-    var tint: Color = .uwPrimary
+    var tint: Color = .uwSuccess  // Lime green by default
     var shadowOffset: CGFloat = 3
 
     func makeBody(configuration: Configuration) -> some View {
@@ -586,16 +619,16 @@ struct DuoPillButtonStyle: ButtonStyle {
         let pressOffset: CGFloat = isPressed ? shadowOffset : 0
 
         configuration.label
-            .font(.custom("DINNextRoundedLTW01-Bold", size: 15))
-            .foregroundColor(isSelected ? .black : .uwTextPrimary)  // Black text on lime green
+            .font(.system(size: 15, weight: .bold))
+            .foregroundColor(isSelected ? .white : .uwTextPrimary)
             .padding(.horizontal, 20)
-            .padding(.vertical, 10)  // Thinner padding
+            .padding(.vertical, 12)
             .background(
                 ZStack {
                     if isSelected {
-                        // Solid shadow for selected state - darker shade, no opacity
+                        // Solid shadow for selected state
                         Capsule()
-                            .fill(tint.darker(by: 0.25))
+                            .fill(tint == .uwSuccess ? Color.uwSuccessDark : tint.darker(by: 0.25))
                             .offset(y: shadowOffset)
 
                         // Main pill - moves down on press
@@ -672,21 +705,21 @@ struct DuoCheckbox: View {
         }) {
             ZStack {
                 if isChecked {
-                    // Solid shadow - darker shade of primary color
+                    // Solid shadow - lime green shadow
                     Circle()
-                        .fill(Color.uwPrimaryDark)
+                        .fill(Color.uwSuccessDark)
                         .frame(width: size, height: size)
                         .offset(y: 3)
 
-                    // Main circle - checked
+                    // Main circle - lime green checked
                     Circle()
-                        .fill(Color.uwPrimary)
+                        .fill(Color.uwSuccess)
                         .frame(width: size, height: size)
 
-                    // Checkmark - black on lime green
+                    // Checkmark - white on lime green
                     Image(systemName: "checkmark")
                         .font(.system(size: size * 0.45, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                 } else {
                     // Unchecked: card shadow
                     Circle()
@@ -700,7 +733,7 @@ struct DuoCheckbox: View {
                         .frame(width: size, height: size)
                         .overlay(
                             Circle()
-                                .stroke(Color.uwTextTertiary, lineWidth: 2)
+                                .stroke(Color.uwBorder, lineWidth: 2)
                         )
                 }
             }
@@ -839,7 +872,7 @@ struct DuoStreakBadge: View {
     let count: Int
     let label: String
     var iconName: String = "flame.fill"
-    var color: Color = .uwWarning
+    var color: Color = .streakOrange  // Duolingo fire orange
 
     @State private var scale: CGFloat = 0.8
     @State private var rotation: Double = -10
@@ -875,7 +908,7 @@ struct DuoStreakBadge: View {
                 .fill(Color.uwCard)
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)
-                        .strokeBorder(color.opacity(0.3), lineWidth: 2)
+                        .strokeBorder(color.opacity(0.4), lineWidth: 2)
                 )
         )
     }

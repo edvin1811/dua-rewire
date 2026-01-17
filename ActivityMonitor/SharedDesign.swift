@@ -49,37 +49,47 @@ extension Color {
     }
 }
 
-// MARK: - Design System Colors (iOS 26 Glassmorphism)
+// MARK: - Design System Colors (Duolingo-Inspired Vibrant System)
 enum GlassDesign {
-    // Glass backgrounds - slightly more visible for iOS 26 style
+    // Glass backgrounds - for report views
     static let background = Color.white.opacity(0.10)
     static let backgroundLight = Color.white.opacity(0.14)
     static let border = Color.white.opacity(0.18)
     static let highlight = Color.white.opacity(0.30)
 
-    // Brand colors
-    static let brand = Color(hex: "A8E61D")
-    static let brandDark = Color(hex: "8BC516")
+    // Brand colors - Duolingo vibrant palette
+    static let brand = Color(hex: "58CC02")         // Lime green - THE Duolingo color
+    static let brandDark = Color(hex: "58A700")     // Darker green for shadows
+
+    // Primary colors
+    static let primary = Color(hex: "1CB0F6")       // Duolingo blue
+    static let primaryDark = Color(hex: "1899D6")   // Darker blue
+    static let accent = Color(hex: "FFC800")        // Golden yellow
+    static let accentDark = Color(hex: "E5A000")    // Darker gold
 
     // Text colors
     static let textPrimary = Color.white
-    static let textSecondary = Color.white.opacity(0.6)
-    static let textTertiary = Color.white.opacity(0.4)
+    static let textSecondary = Color.white.opacity(0.7)
+    static let textTertiary = Color.white.opacity(0.5)
 
-    // Accent colors
-    static let success = Color(hex: "58CC02")
-    static let blue = Color(hex: "0A84FF")
-    static let orange = Color(hex: "FF9500")
-    static let red = Color(hex: "FF453A")
-    static let purple = Color(hex: "BF5AF2")
+    // Semantic colors
+    static let success = Color(hex: "58CC02")       // Lime green
+    static let blue = Color(hex: "1CB0F6")          // Duolingo blue
+    static let orange = Color(hex: "FF9600")        // Orange warning
+    static let red = Color(hex: "FF4B4B")           // Bright red
+    static let purple = Color(hex: "CE82FF")        // Vibrant purple
 
-    // Rank colors
-    static let gold = Color(hex: "FFD700")
+    // Rank/achievement colors
+    static let gold = Color(hex: "FFC800")          // Golden yellow
     static let silver = Color(hex: "C0C0C0")
     static let bronze = Color(hex: "CD7F32")
 
-    // App background
-    static let appBackground = Color(hex: "0A0A0A")
+    // Streak colors
+    static let streak = Color(hex: "FF9600")        // Fire orange
+
+    // App background - Duolingo dark
+    static let appBackground = Color(hex: "131F24")
+    static let cardBackground = Color(hex: "1A2B32")
 }
 
 // MARK: - Glass Card Modifier (Custom Glassmorphism)

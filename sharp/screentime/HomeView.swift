@@ -140,54 +140,47 @@ struct HomeView: View {
         .frame(height: 190)
     }
 
-    // MARK: - Today's Progress Card (Duolingo-style)
+    // MARK: - Today's Progress Card (Duolingo-style - flat card with border, no shadow)
     private var todayProgressCard: some View {
         VStack(spacing: 20) {
             HStack {
                 Text("Today's Progress")
-                    .font(.system(size: 20, weight: .heavy))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.uwTextPrimary)
 
                 Spacer()
 
                 Text(formatDate(Date()))
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 13, weight: .medium))
                     .foregroundColor(.uwTextSecondary)
             }
 
             HStack(spacing: 24) {
-                // Goal Ring - vibrant lime green
+                // Goal Ring - Duolingo blue (flat, no gradient)
                 ZStack {
                     Circle()
-                        .stroke(Color.uwSuccess.opacity(0.2), lineWidth: 12)
+                        .stroke(Color.uwBorder, lineWidth: 8)
 
                     Circle()
                         .trim(from: 0, to: showContent ? goalProgress : 0)
-                        .stroke(
-                            LinearGradient(
-                                colors: [Color.uwSuccess, Color.uwSuccessLight],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            style: StrokeStyle(lineWidth: 12, lineCap: .round)
-                        )
+                        .stroke(Color.uwPrimary, style: StrokeStyle(lineWidth: 8, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                         .animation(DuoAnimation.progressUpdate.delay(0.3), value: showContent)
 
                     VStack(spacing: 2) {
                         Text("\(Int(goalProgress * 100))%")
-                            .font(.system(size: 26, weight: .heavy))
-                            .foregroundColor(.uwSuccess)
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(.uwTextPrimary)
 
                         Text("of goal")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.system(size: 10, weight: .medium))
                             .foregroundColor(.uwTextSecondary)
                     }
                 }
-                .frame(width: 110, height: 110)
+                .frame(width: 90, height: 90)
 
-                // Stats - more vibrant
-                VStack(alignment: .leading, spacing: 16) {
+                // Stats
+                VStack(alignment: .leading, spacing: 14) {
                     statRow(
                         icon: "hourglass",
                         label: "Screen time",
@@ -206,17 +199,14 @@ struct HomeView: View {
                 Spacer()
             }
         }
-        .padding(20)
+        .padding(16)
         .background(
-            ZStack {
-                // 3D shadow effect
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.uwCardShadow)
-                    .offset(y: 4)
-
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.uwCard)
-            }
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.uwCard)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(Color.uwBorder, lineWidth: 2)
         )
         .opacity(showContent ? 1 : 0)
         .offset(y: showContent ? 0 : 20)
@@ -276,99 +266,83 @@ struct HomeView: View {
     }
 
     private func quickStatCard(icon: String, value: String, label: String, color: Color) -> some View {
-        VStack(spacing: 10) {
-            // Icon with colored background circle
+        VStack(spacing: 8) {
+            // Icon with colored background
             ZStack {
                 Circle()
-                    .fill(color.opacity(0.15))
-                    .frame(width: 44, height: 44)
+                    .fill(color.opacity(0.12))
+                    .frame(width: 40, height: 40)
 
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(color)
             }
 
             Text(value)
-                .font(.system(size: 20, weight: .heavy))
+                .font(.system(size: 18, weight: .bold))
                 .foregroundColor(.uwTextPrimary)
 
             Text(label)
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 11, weight: .medium))
                 .foregroundColor(.uwTextSecondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 18)
+        .padding(.vertical, 14)
         .background(
-            ZStack {
-                // 3D shadow
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.uwCardShadow)
-                    .offset(y: 3)
-
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.uwCard)
-            }
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.uwCard)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(Color.uwBorder, lineWidth: 2)
         )
     }
 
-    // MARK: - Active Session Card (Duolingo-style pulsing)
+    // MARK: - Active Session Card (status display - flat with green border)
     private var activeSessionCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 // Pulsing indicator
                 Circle()
                     .fill(Color.uwSuccess)
-                    .frame(width: 10, height: 10)
-                    .pulsing(color: .uwSuccess)
+                    .frame(width: 8, height: 8)
 
                 Text("Active Session")
-                    .font(.system(size: 15, weight: .heavy))
+                    .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.uwSuccess)
 
                 Spacer()
 
                 if let timer = appStateManager.activeTimerSession {
                     Text(formatTimeRemaining(timer.timeRemaining))
-                        .font(.system(size: 18, weight: .heavy))
+                        .font(.system(size: 16, weight: .bold))
                         .foregroundColor(.uwTextPrimary)
                 }
             }
 
             if let timer = appStateManager.activeTimerSession {
-                // Progress bar - lime green
+                // Progress bar - flat, Duolingo blue
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(Color.uwCardShadow)
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.uwBorder)
 
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color.uwSuccess, Color.uwSuccessLight],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.uwPrimary)
                             .frame(width: geo.size.width * (1 - timer.timeRemaining / timer.duration))
                     }
                 }
-                .frame(height: 10)
+                .frame(height: 8)
             }
         }
-        .padding(18)
+        .padding(16)
         .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.uwSuccessDark.opacity(0.15))
-                    .offset(y: 3)
-
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.uwSuccess.opacity(0.12))
-            }
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.uwCard)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .strokeBorder(Color.uwSuccess.opacity(0.4), lineWidth: 2)
+                .strokeBorder(Color.uwSuccess, lineWidth: 2)
         )
     }
 

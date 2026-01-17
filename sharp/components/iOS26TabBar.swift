@@ -86,7 +86,7 @@ struct iOS26TabBar: View {
     }
 }
 
-// MARK: - Tab Button (Duolingo-style vibrant tabs)
+// MARK: - Tab Button (Duolingo-style: selected has filled bg, unselected just icon)
 struct TabButton: View {
     let tab: TabItem
     let isSelected: Bool
@@ -97,31 +97,31 @@ struct TabButton: View {
 
     var body: some View {
         Button(action: onTap) {
-            VStack(spacing: 4) {
+            VStack(spacing: 2) {
                 ZStack {
-                    // Selected indicator - vibrant lime green
+                    // Selected: filled rounded rect with primary blue
                     if isSelected {
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(Color.uwSuccess.opacity(0.15))
-                            .frame(width: 56, height: 34)
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.uwPrimary.opacity(0.15))
+                            .frame(width: 52, height: 40)
                             .matchedGeometryEffect(id: "tabIndicator", in: namespace)
                     }
 
                     Image(systemName: isSelected ? tab.activeIcon : tab.icon)
-                        .font(.system(size: 22, weight: isSelected ? .bold : .medium))
-                        .foregroundColor(isSelected ? .uwSuccess : .uwTextTertiary)
-                        .scaleEffect(isSelected ? 1.1 : 1.0)
-                        .animation(DuoAnimation.microBounce, value: isSelected)
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundColor(isSelected ? .uwPrimary : .uwTextTertiary)
+                        .scaleEffect(isSelected ? 1.05 : 1.0)
                 }
-                .frame(height: 34)
+                .frame(height: 40)
 
                 Text(tab.title)
-                    .font(.system(size: 11, weight: isSelected ? .bold : .medium))
-                    .foregroundColor(isSelected ? .uwSuccess : .uwTextTertiary)
+                    .font(.system(size: 10, weight: isSelected ? .bold : .medium))
+                    .foregroundColor(isSelected ? .uwPrimary : .uwTextTertiary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 6)
-            .scaleEffect(isPressed ? 0.92 : 1.0)
+            .padding(.vertical, 4)
+            .scaleEffect(isPressed ? 0.95 : 1.0)
+            .animation(.spring(response: 0.2, dampingFraction: 0.7), value: isSelected)
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(
@@ -130,7 +130,7 @@ struct TabButton: View {
                     withAnimation(.easeOut(duration: 0.08)) { isPressed = true }
                 }
                 .onEnded { _ in
-                    withAnimation(DuoAnimation.microBounce) { isPressed = false }
+                    withAnimation(.spring(response: 0.2, dampingFraction: 0.7)) { isPressed = false }
                 }
         )
     }

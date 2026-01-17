@@ -97,13 +97,13 @@ struct CalendarView: View {
         }
     }
 
-    // MARK: - Hero Header Section (Duolingo-style vibrant)
+    // MARK: - Hero Header Section (Duolingo-style - flat card with border)
     private var heroHeaderSection: some View {
         VStack(spacing: 0) {
             // Header bar
             HStack {
                 Text("Insights")
-                    .font(.system(size: 30, weight: .heavy))
+                    .font(.system(size: 28, weight: .bold))
                     .foregroundColor(.uwTextPrimary)
 
                 Spacer()
@@ -113,94 +113,84 @@ struct CalendarView: View {
                     DuoHaptics.lightTap()
                 } label: {
                     Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.uwPrimary)
-                        .padding(12)
+                        .padding(10)
                         .background(
                             Circle()
-                                .fill(Color.uwPrimary.opacity(0.15))
+                                .fill(Color.uwPrimary.opacity(0.12))
                         )
                 }
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
-            .padding(.bottom, 20)
+            .padding(.bottom, 16)
 
-            // Summary card - Duolingo-style with 3D effect
+            // Summary card - flat with border (not clickable = no shadow)
             HStack(spacing: 20) {
-                // Goal Ring - vibrant lime green
+                // Goal Ring - Duolingo blue (flat)
                 ZStack {
                     Circle()
-                        .stroke(Color.uwSuccess.opacity(0.2), lineWidth: 10)
+                        .stroke(Color.uwBorder, lineWidth: 8)
 
                     Circle()
                         .trim(from: 0, to: showContent ? dailyGoalProgress : 0)
-                        .stroke(
-                            LinearGradient(
-                                colors: [Color.uwSuccess, Color.uwSuccessLight],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            style: StrokeStyle(lineWidth: 10, lineCap: .round)
-                        )
+                        .stroke(Color.uwPrimary, style: StrokeStyle(lineWidth: 8, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                         .animation(DuoAnimation.progressUpdate.delay(0.2), value: showContent)
 
                     VStack(spacing: 0) {
                         Text("\(Int(dailyGoalProgress * 100))%")
-                            .font(.system(size: 24, weight: .heavy))
-                            .foregroundColor(.uwSuccess)
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(.uwTextPrimary)
 
                         Text("of goal")
-                            .font(.system(size: 10, weight: .semibold))
+                            .font(.system(size: 10, weight: .medium))
                             .foregroundColor(.uwTextSecondary)
                     }
                 }
-                .frame(width: 90, height: 90)
+                .frame(width: 80, height: 80)
                 .opacity(showContent ? 1 : 0)
-                .scaleEffect(showContent ? 1 : 0.8)
+                .scaleEffect(showContent ? 1 : 0.9)
 
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: 10) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Screen Time")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .medium))
                             .foregroundColor(.uwTextSecondary)
 
                         Text(formatScreenTime())
-                            .font(.system(size: 28, weight: .heavy))
+                            .font(.system(size: 24, weight: .bold))
                             .foregroundColor(.uwTextPrimary)
                     }
 
                     HStack(spacing: 4) {
                         Image(systemName: dailyGoalProgress >= 0.5 ? "arrow.down" : "arrow.up")
-                            .font(.system(size: 12, weight: .bold))
-                        Text(dailyGoalProgress >= 0.5 ? "On track!" : "Keep going")
-                            .font(.system(size: 13, weight: .bold))
+                            .font(.system(size: 11, weight: .bold))
+                        Text(dailyGoalProgress >= 0.5 ? "On track" : "Keep going")
+                            .font(.system(size: 12, weight: .semibold))
                     }
                     .foregroundColor(dailyGoalProgress >= 0.5 ? .uwSuccess : .uwAccent)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
                     .background(
                         Capsule()
-                            .fill(dailyGoalProgress >= 0.5 ? Color.uwSuccess.opacity(0.15) : Color.uwAccent.opacity(0.15))
+                            .fill(dailyGoalProgress >= 0.5 ? Color.uwSuccess.opacity(0.12) : Color.uwAccent.opacity(0.12))
                     )
                 }
                 .opacity(showContent ? 1 : 0)
-                .offset(x: showContent ? 0 : -15)
+                .offset(x: showContent ? 0 : -10)
 
                 Spacer()
             }
-            .padding(20)
+            .padding(16)
             .background(
-                ZStack {
-                    // 3D shadow
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.uwCardShadow)
-                        .offset(y: 4)
-
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.uwCard)
-                }
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.uwCard)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .strokeBorder(Color.uwBorder, lineWidth: 2)
             )
             .padding(.horizontal, 20)
         }

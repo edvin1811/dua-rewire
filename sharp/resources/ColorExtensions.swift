@@ -499,28 +499,28 @@ struct DuoSecondaryButtonStyle: ButtonStyle {
 
 // MARK: - Duolingo-Style Card Modifier
 extension View {
-    /// Info card with border - NO shadow (for non-interactive content)
-    /// Use this for progress displays, stats, info cards that aren't clickable
-    func duoCard(padding: CGFloat = 20, cornerRadius: CGFloat = 12) -> some View {
+    /// Info card - FLAT with thin gray border (Duolingo style for non-interactive)
+    /// Only pressable things get shadows - this is for stats, progress displays, info
+    func duoCard(padding: CGFloat = 16, cornerRadius: CGFloat = 16) -> some View {
         self
             .padding(padding)
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .fill(Color.uwCard)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: cornerRadius)
-                            .strokeBorder(Color.uwCardShadow.opacity(0.3), lineWidth: 2)
-                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .strokeBorder(Color.uwBorder, lineWidth: 2)
             )
     }
 
-    /// Interactive card with 3D shadow - ONLY for clickable cards
-    func duoInteractiveCard(padding: CGFloat = 20, cornerRadius: CGFloat = 12, shadowOffset: CGFloat = 4) -> some View {
+    /// Interactive card with 3D shadow - ONLY for clickable/tappable cards
+    func duoInteractiveCard(padding: CGFloat = 16, cornerRadius: CGFloat = 16, shadowOffset: CGFloat = 4) -> some View {
         self
             .padding(padding)
             .background(
                 ZStack {
-                    // Solid shadow layer - only on interactive elements
+                    // Solid shadow layer - ONLY on interactive elements
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(Color.uwCardShadow)
                         .offset(y: shadowOffset)
@@ -533,7 +533,7 @@ extension View {
     }
 
     /// 3D card with visible shadow - for prominent buttons/interactive elements
-    func duo3DCard(padding: CGFloat = 20, cornerRadius: CGFloat = 12, shadowOffset: CGFloat = 4) -> some View {
+    func duo3DCard(padding: CGFloat = 16, cornerRadius: CGFloat = 16, shadowOffset: CGFloat = 4) -> some View {
         self
             .padding(padding)
             .background(
@@ -550,19 +550,13 @@ extension View {
             )
     }
 
-    /// Input field with 3D shadow - for text fields, etc.
-    func duoInputShadow(cornerRadius: CGFloat = 12, shadowOffset: CGFloat = 3) -> some View {
+    /// Flat card - no border, no shadow (for minimal styling)
+    func duoFlatCard(padding: CGFloat = 16, cornerRadius: CGFloat = 16) -> some View {
         self
+            .padding(padding)
             .background(
-                ZStack {
-                    // Solid shadow
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(Color.uwCardShadow)
-                        .offset(y: shadowOffset)
-
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .fill(Color.uwCard)
-                }
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(Color.uwCard)
             )
     }
 

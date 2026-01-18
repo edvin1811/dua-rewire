@@ -24,38 +24,42 @@ class ThemeManager: ObservableObject {
 
 // MARK: - Color Extensions
 extension Color {
-    // MARK: - Brand Colors (Duolingo-Inspired Vibrant System)
-    // Primary: Duolingo Blue - headers, secondary actions
-    // Success: Lime Green - main CTA buttons, completions (THE signature color)
-    // Accent: Golden Yellow - highlights, achievements, streaks
+    // MARK: - Duolingo Brand Colors (Exact Values from Guidelines)
+    // Feather Green: #58CC02 - Primary CTAs, success states
+    // Macaw Blue: #1CB0F6 - Secondary actions, information
+    // Cardinal Red: #FF4B4B - Errors, hearts, wrong answers
+    // Bee Yellow: #FFC800 - Highlights, streaks, rewards
+    // Fox Orange: #FF9600 - Achievements, energy
+    // Eel Dark: #4B4B4B - Primary text
+    // Snow White: #FFFFFF - Backgrounds
 
-    // MARK: Primary Brand Color (Duolingo Blue)
-    static let uwPrimary = Color(hex: "1CB0F6")              // Bright Duolingo blue
+    // MARK: Primary Brand Color (Macaw Blue)
+    static let uwPrimary = Color(hex: "1CB0F6")              // Macaw Blue - secondary actions
     static let uwPrimaryDark = Color(hex: "1899D6")          // Darker blue for shadows
     static let uwPrimaryLight = Color(hex: "7ED4FC")         // Lighter blue for highlights
 
-    // MARK: Success/Action Color (Lime Green - THE Duolingo Button Color)
-    static let uwSuccess = Color(hex: "58CC02")              // Vibrant lime green - main buttons
+    // MARK: Success/Action Color (Feather Green - THE Duolingo Button Color)
+    static let uwSuccess = Color(hex: "58CC02")              // Feather Green - primary CTAs
     static let uwSuccessDark = Color(hex: "58A700")          // Darker green for 3D shadows
     static let uwSuccessLight = Color(hex: "89E219")         // Lighter green for highlights
 
-    // MARK: Accent Color (Golden Yellow)
-    static let uwAccent = Color(hex: "FFC800")               // Bright golden yellow - streaks, XP
+    // MARK: Accent Color (Bee Yellow)
+    static let uwAccent = Color(hex: "FFC800")               // Bee Yellow - streaks, rewards
     static let uwAccentDark = Color(hex: "E5A000")           // Darker gold for shadows
     static let uwAccentLight = Color(hex: "FFD84D")          // Lighter gold for highlights
 
     // MARK: Semantic Colors
-    static let uwWarning = Color(hex: "FF9600")              // Orange for warnings
-    static let uwError = Color(hex: "FF4B4B")                // Bright red - destructive
-    static let uwPurple = Color(hex: "CE82FF")               // Vibrant purple - premium/special
+    static let uwWarning = Color(hex: "FF9600")              // Fox Orange - achievements
+    static let uwError = Color(hex: "FF4B4B")                // Cardinal Red - errors
+    static let uwPurple = Color(hex: "CE82FF")               // Purple - premium/special
 
-    // MARK: Theme-Aware Background Colors (Duolingo-style dark theme)
-    /// Main background - deep charcoal (Duolingo dark mode)
+    // MARK: Theme-Aware Background Colors
+    /// Main background - Snow White in light, dark charcoal in dark
     static var uwBackground: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "131F24")  // Duolingo dark charcoal
-                : UIColor(hex: "FFFFFF")  // Clean white
+                ? UIColor(hex: "131F24")  // Dark charcoal
+                : UIColor(hex: "FFFFFF")  // Snow White
         })
     }
 
@@ -63,73 +67,76 @@ extension Color {
     static var uwSurface: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "1A2B32")  // Slightly lighter charcoal
-                : UIColor(hex: "F7F7F7")  // Light gray
+                ? UIColor(hex: "1A2B32")
+                : UIColor(hex: "F7F7F7")
         })
     }
 
-    /// Card background - for elevated cards
+    /// Card background - white on light, dark surface on dark
     static var uwCard: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "1A2B32")  // Card dark
-                : UIColor(hex: "FFFFFF")  // White cards
+                ? UIColor(hex: "1A2B32")
+                : UIColor(hex: "FFFFFF")
         })
     }
 
-    /// Card shadow/border color (solid shadows for 3D effect)
+    /// Card shadow color for 3D effects
     static var uwCardShadow: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "0D1518")  // Deep shadow
-                : UIColor(hex: "E5E5E5")  // Light gray shadow
+                ? UIColor(hex: "0D1518")
+                : UIColor(hex: "E5E5E5")
         })
     }
 
-    /// Subtle border color
+    /// Border color - subtle gray
     static var uwBorder: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "2D4047")  // Teal-tinted border
-                : UIColor(hex: "E5E5E5")  // Light gray border
+                ? UIColor(hex: "2D4047")
+                : UIColor(hex: "E5E5E5")
         })
     }
 
-    // MARK: Theme-Aware Text Colors (High contrast Duolingo style)
+    // MARK: Theme-Aware Text Colors
+    /// Primary text - Eel Dark (#4B4B4B) in light mode
     static var uwTextPrimary: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "FFFFFF")  // Pure white
-                : UIColor(hex: "3C3C3C")  // Dark gray (not pure black)
+                ? UIColor(hex: "FFFFFF")
+                : UIColor(hex: "4B4B4B")  // Eel Dark
         })
     }
 
+    /// Secondary text - medium gray
     static var uwTextSecondary: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "AFAFAF")  // Medium gray
-                : UIColor(hex: "777777")  // Medium gray
+                ? UIColor(hex: "AFAFAF")
+                : UIColor(hex: "777777")
         })
     }
 
+    /// Tertiary text - light gray
     static var uwTextTertiary: Color {
         Color(UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "6E6E6E")  // Dim gray
-                : UIColor(hex: "AFAFAF")  // Light gray
+                ? UIColor(hex: "6E6E6E")
+                : UIColor(hex: "AFAFAF")
         })
     }
 
-    // MARK: Legacy Aliases (for backwards compatibility)
+    // MARK: Legacy Aliases
     static let brandPrimary = uwPrimary
     static let brandPrimaryDark = uwPrimaryDark
     static let brandPrimaryLight = uwPrimaryLight
-    static let accentGreen = uwSuccess                        // Lime green
-    static let accentOrange = uwWarning                       // Orange
-    static let accentYellow = uwAccent                        // Golden yellow
-    static let accentRed = uwError                            // Bright red
-    static let accentPurple = uwPurple                        // Vibrant purple
-    static let accentBlue = uwPrimary                         // Duolingo blue
+    static let accentGreen = uwSuccess
+    static let accentOrange = uwWarning
+    static let accentYellow = uwAccent
+    static let accentRed = uwError
+    static let accentPurple = uwPurple
+    static let accentBlue = uwPrimary
 
     static var appBackground: Color { uwBackground }
     static var appSurface: Color { uwSurface }
@@ -138,21 +145,64 @@ extension Color {
     static var textSecondary: Color { uwTextSecondary }
     static var textTertiary: Color { uwTextTertiary }
 
-    // Functional color aliases
+    // Functional aliases
     static let successColor = uwSuccess
     static let warningColor = uwWarning
     static let errorColor = uwError
-    static let activeState = uwSuccess                        // Lime green for active
-    static let completedState = uwSuccess                     // Lime green for completed
+    static let activeState = uwSuccess
+    static let completedState = uwSuccess
     static let blockedState = uwError
 
-    // Progress colors - use accent yellow for that Duolingo feel
+    // Progress colors
     static let progressBackground = Color.uwCardShadow
-    static let progressFill = uwAccent                        // Golden yellow
+    static let progressFill = uwPrimary  // Use blue for progress (Duolingo style)
 
     // Streak/fire colors
-    static let streakOrange = Color(hex: "FF9600")            // Fire orange
-    static let streakRed = Color(hex: "FF4B4B")               // Fire red
+    static let streakOrange = Color(hex: "FF9600")  // Fox Orange
+    static let streakRed = Color(hex: "FF4B4B")     // Cardinal Red
+}
+
+// MARK: - Design Tokens (8-Point Grid System)
+enum Spacing {
+    static let xxs: CGFloat = 2
+    static let xs: CGFloat = 4
+    static let sm: CGFloat = 8
+    static let md: CGFloat = 16
+    static let lg: CGFloat = 24
+    static let xl: CGFloat = 32
+    static let xxl: CGFloat = 48
+}
+
+enum Radius {
+    static let xs: CGFloat = 4
+    static let sm: CGFloat = 8
+    static let md: CGFloat = 12
+    static let lg: CGFloat = 16
+    static let pill: CGFloat = 999
+}
+
+// MARK: - Typography Scale (iOS HIG)
+enum Typography {
+    // Large Title: 34pt Bold
+    static let largeTitle: Font = .system(size: 34, weight: .bold)
+    // Title 1: 28pt Bold
+    static let title1: Font = .system(size: 28, weight: .bold)
+    // Title 2: 22pt Bold
+    static let title2: Font = .system(size: 22, weight: .bold)
+    // Title 3: 20pt Semibold
+    static let title3: Font = .system(size: 20, weight: .semibold)
+    // Headline: 17pt Semibold
+    static let headline: Font = .system(size: 17, weight: .semibold)
+    // Body: 17pt Regular
+    static let body: Font = .system(size: 17, weight: .regular)
+    // Callout: 16pt Regular
+    static let callout: Font = .system(size: 16, weight: .regular)
+    // Subhead: 15pt Regular
+    static let subhead: Font = .system(size: 15, weight: .regular)
+    // Footnote: 13pt Regular
+    static let footnote: Font = .system(size: 13, weight: .regular)
+    // Caption: 12pt Regular
+    static let caption: Font = .system(size: 12, weight: .regular)
 }
 
 // MARK: - Hex Color Extension
@@ -196,46 +246,56 @@ extension Color {
     }
 }
 
-// MARK: - Animation Presets
+// MARK: - Animation Presets (iOS HIG Guidelines)
+// Micro-interactions: 0.1-0.15s
+// Standard transitions: 0.25-0.35s
+// Page transitions: 0.3-0.4s
+// Maximum: 400ms (never exceed)
 enum DuoAnimation {
-    /// Quick button press - snappy feedback (0.2s)
-    static let buttonPress = Animation.spring(response: 0.2, dampingFraction: 0.6)
+    /// Micro: Button press feedback (0.15s) - fastest
+    static let buttonPress = Animation.spring(response: 0.15, dampingFraction: 0.6)
 
-    /// Card appearance - bouncy entrance (0.3s)
+    /// Micro: Toggle/checkbox (0.15s)
+    static let microBounce = Animation.spring(response: 0.15, dampingFraction: 0.6)
+
+    /// Standard: Card appearance (0.3s)
     static let cardBounce = Animation.spring(response: 0.3, dampingFraction: 0.7)
 
-    /// Tab switch - smooth but lively (0.25s)
+    /// Standard: Tab switch (0.25s)
     static let tabSwitch = Animation.spring(response: 0.25, dampingFraction: 0.7)
 
-    /// Progress bar updates - smooth fill (0.4s)
-    static let progressUpdate = Animation.spring(response: 0.4, dampingFraction: 0.8)
+    /// Standard: Progress updates (0.35s)
+    static let progressUpdate = Animation.spring(response: 0.35, dampingFraction: 0.8)
 
-    /// Celebration/success - extra bouncy! (0.4s)
-    static let celebration = Animation.spring(response: 0.4, dampingFraction: 0.5)
+    /// Standard: Checkbox completion (0.2s)
+    static let checkboxPop = Animation.spring(response: 0.2, dampingFraction: 0.5)
 
-    /// Checkbox pop - satisfying completion (0.25s)
-    static let checkboxPop = Animation.spring(response: 0.25, dampingFraction: 0.5)
-
-    /// Default spring for general use
+    /// Standard: Default spring (0.3s)
     static let defaultSpring = Animation.spring(response: 0.3, dampingFraction: 0.7)
 
-    /// Hero entrance - dramatic reveal (0.5s)
-    static let heroEntrance = Animation.spring(response: 0.5, dampingFraction: 0.7)
+    /// Page: Hero entrance (0.4s) - maximum allowed
+    static let heroEntrance = Animation.spring(response: 0.4, dampingFraction: 0.7)
 
-    /// Bouncy pop for rewards/achievements
-    static let rewardPop = Animation.spring(response: 0.35, dampingFraction: 0.4)
+    /// Page: Celebration/success (0.4s)
+    static let celebration = Animation.spring(response: 0.4, dampingFraction: 0.5)
 
-    /// Smooth slide for content transitions
-    static let smoothSlide = Animation.spring(response: 0.4, dampingFraction: 0.85)
+    /// Standard: Reward pop (0.3s)
+    static let rewardPop = Animation.spring(response: 0.3, dampingFraction: 0.4)
 
-    /// Quick bounce for micro-interactions
-    static let microBounce = Animation.spring(response: 0.15, dampingFraction: 0.5)
+    /// Page: Content slide (0.35s)
+    static let smoothSlide = Animation.spring(response: 0.35, dampingFraction: 0.85)
 
-    /// Elastic pop for numbers changing
-    static let numberPop = Animation.spring(response: 0.3, dampingFraction: 0.4)
+    /// Standard: Number changes (0.25s)
+    static let numberPop = Animation.spring(response: 0.25, dampingFraction: 0.4)
 
-    /// Gentle float for ambient animations
+    /// Ambient: Gentle float (slower, for decorative)
     static let gentleFloat = Animation.easeInOut(duration: 2.0)
+
+    /// Quick: ease-out for most transitions (0.15s)
+    static let quick = Animation.easeOut(duration: 0.15)
+
+    /// Standard: ease-in-out (0.3s)
+    static let standard = Animation.easeInOut(duration: 0.3)
 
     /// Pulse animation for attention
     static let pulse = Animation.easeInOut(duration: 0.8)
@@ -367,21 +427,22 @@ enum DuoHaptics {
     }
 }
 
-// MARK: - The Signature Duolingo Button Style
-/// 3D button with solid shadow that presses down - THE most important visual element
-/// No blur shadows, no opacity tricks - just solid colors for that cartoony look
-/// DEFAULT: Lime green (uwSuccess) - the iconic Duolingo button color
+// MARK: - Duolingo Chiclet Button Style
+/// 4-pixel bottom shadow that disappears on press, creating physical "push down" sensation
+/// - Corner radius: 12-16pt (Duolingo style)
+/// - Button height: 50pt (comfortable tapping, HIG recommendation)
+/// - Shadow offset: 4pt (exact Duolingo specification)
 struct Duo3DButtonStyle: ButtonStyle {
     let color: Color
     let shadowColor: Color
     let textColor: Color
-    var cornerRadius: CGFloat = 16  // Rounded like Duolingo
-    var shadowOffset: CGFloat = 4
-    var buttonHeight: CGFloat = 52
+    var cornerRadius: CGFloat = Radius.md  // 12pt standard
+    var shadowOffset: CGFloat = 4          // Exact Duolingo spec
+    var buttonHeight: CGFloat = 50         // HIG recommended height
 
     init(color: Color = .uwSuccess, shadowColor: Color? = nil, textColor: Color = .white) {
         self.color = color
-        // Use the proper dark variant for the shadow
+        // Use proper dark variant for the shadow
         if color == .uwSuccess {
             self.shadowColor = shadowColor ?? .uwSuccessDark
         } else if color == .uwPrimary {
@@ -396,29 +457,29 @@ struct Duo3DButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         let isPressed = configuration.isPressed
-        let pressOffset: CGFloat = isPressed ? shadowOffset : 0
 
         ZStack(alignment: .top) {
-            // Shadow layer - stays in place, solid color
+            // Shadow layer - stays in place, disappears visually when pressed
             RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(shadowColor)
                 .frame(minHeight: buttonHeight)
                 .offset(y: shadowOffset)
 
-            // Main button layer - moves down on press to meet shadow
+            // Main button - moves down 4px on press to meet shadow position
             RoundedRectangle(cornerRadius: cornerRadius)
-                .fill(color)
+                .fill(isPressed ? color.opacity(0.9) : color)
                 .frame(minHeight: buttonHeight)
-                .offset(y: pressOffset)
+                .offset(y: isPressed ? shadowOffset : 0)
                 .overlay(
                     configuration.label
-                        .font(.system(size: 17, weight: .bold))
+                        .font(.headline)  // 17pt semibold per HIG
                         .foregroundColor(textColor)
-                        .offset(y: pressOffset)
+                        .offset(y: isPressed ? shadowOffset : 0)
                 )
         }
         .frame(minHeight: buttonHeight + shadowOffset)
-        .animation(.spring(response: 0.15, dampingFraction: 0.6), value: isPressed)
+        .scaleEffect(isPressed ? 0.98 : 1.0)  // Subtle shrink per guidelines
+        .animation(DuoAnimation.quick, value: isPressed)
         .onChange(of: isPressed) { _, pressed in
             if pressed { DuoHaptics.lightTap() }
         }
@@ -497,11 +558,14 @@ struct DuoSecondaryButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - Duolingo-Style Card Modifier
+// MARK: - Card Modifiers (Duolingo Design Rules)
+// Rule: Only pressable elements get shadows
+// Non-interactive = flat with border
+// Interactive = 3D shadow
 extension View {
-    /// Info card - FLAT with thin gray border (Duolingo style for non-interactive)
-    /// Only pressable things get shadows - this is for stats, progress displays, info
-    func duoCard(padding: CGFloat = 16, cornerRadius: CGFloat = 16) -> some View {
+    /// Info card - FLAT with thin gray border (non-interactive)
+    /// Use for: stats, progress displays, info cards
+    func duoCard(padding: CGFloat = Spacing.md, cornerRadius: CGFloat = Radius.lg) -> some View {
         self
             .padding(padding)
             .background(
@@ -514,16 +578,16 @@ extension View {
             )
     }
 
-    /// Interactive card with 3D shadow - ONLY for clickable/tappable cards
-    func duoInteractiveCard(padding: CGFloat = 16, cornerRadius: CGFloat = 16, shadowOffset: CGFloat = 4) -> some View {
+    /// Interactive card with 4px shadow - ONLY for clickable cards
+    func duoInteractiveCard(padding: CGFloat = Spacing.md, cornerRadius: CGFloat = Radius.lg) -> some View {
         self
             .padding(padding)
             .background(
                 ZStack {
-                    // Solid shadow layer - ONLY on interactive elements
+                    // 4px shadow (Duolingo spec)
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(Color.uwCardShadow)
-                        .offset(y: shadowOffset)
+                        .offset(y: 4)
 
                     // Main card
                     RoundedRectangle(cornerRadius: cornerRadius)
@@ -532,26 +596,24 @@ extension View {
             )
     }
 
-    /// 3D card with visible shadow - for prominent buttons/interactive elements
-    func duo3DCard(padding: CGFloat = 16, cornerRadius: CGFloat = 16, shadowOffset: CGFloat = 4) -> some View {
+    /// 3D card - for prominent interactive elements
+    func duo3DCard(padding: CGFloat = Spacing.md, cornerRadius: CGFloat = Radius.lg) -> some View {
         self
             .padding(padding)
             .background(
                 ZStack {
-                    // Solid shadow layer
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(Color.uwCardShadow)
-                        .offset(y: shadowOffset)
+                        .offset(y: 4)
 
-                    // Main card
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(Color.uwCard)
                 }
             )
     }
 
-    /// Flat card - no border, no shadow (for minimal styling)
-    func duoFlatCard(padding: CGFloat = 16, cornerRadius: CGFloat = 16) -> some View {
+    /// Flat card - no border, no shadow
+    func duoFlatCard(padding: CGFloat = Spacing.md, cornerRadius: CGFloat = Radius.lg) -> some View {
         self
             .padding(padding)
             .background(

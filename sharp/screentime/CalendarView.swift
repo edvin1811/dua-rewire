@@ -69,11 +69,11 @@ struct CalendarView: View {
                 authorizationSection
             } else {
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
+                    VStack(spacing: Spacing.lg) {
                         heroHeaderSection
 
                         tabSelector
-                            .padding(.horizontal, 20)
+                            .padding(.horizontal, Spacing.lg)
 
                         switch selectedTab {
                         case .daily:
@@ -103,7 +103,7 @@ struct CalendarView: View {
             // Header bar
             HStack {
                 Text("Insights")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(Typography.title1)
                     .foregroundColor(.uwTextPrimary)
 
                 Spacer()
@@ -115,64 +115,65 @@ struct CalendarView: View {
                     Image(systemName: "arrow.clockwise")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.uwPrimary)
-                        .padding(10)
+                        .padding(Spacing.sm)
                         .background(
                             Circle()
                                 .fill(Color.uwPrimary.opacity(0.12))
                         )
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 16)
-            .padding(.bottom, 16)
+            .padding(.horizontal, Spacing.lg)
+            .padding(.top, Spacing.md)
+            .padding(.bottom, Spacing.md)
 
             // Summary card - flat with border (not clickable = no shadow)
-            HStack(spacing: 20) {
+            HStack(spacing: Spacing.lg) {
                 // Goal Ring - Duolingo blue (flat)
                 ZStack {
                     Circle()
-                        .stroke(Color.uwBorder, lineWidth: 8)
+                        .stroke(Color.uwBorder, lineWidth: 10)
 
                     Circle()
                         .trim(from: 0, to: showContent ? dailyGoalProgress : 0)
-                        .stroke(Color.uwPrimary, style: StrokeStyle(lineWidth: 8, lineCap: .round))
+                        .stroke(Color.uwPrimary, style: StrokeStyle(lineWidth: 10, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                         .animation(DuoAnimation.progressUpdate.delay(0.2), value: showContent)
 
-                    VStack(spacing: 0) {
+                    VStack(spacing: Spacing.xxs) {
                         Text("\(Int(dailyGoalProgress * 100))%")
-                            .font(.system(size: 22, weight: .bold))
+                            .font(Typography.title2)
                             .foregroundColor(.uwTextPrimary)
 
                         Text("of goal")
-                            .font(.system(size: 10, weight: .medium))
+                            .font(Typography.caption)
                             .foregroundColor(.uwTextSecondary)
                     }
                 }
-                .frame(width: 80, height: 80)
+                .frame(width: 90, height: 90)
                 .opacity(showContent ? 1 : 0)
                 .scaleEffect(showContent ? 1 : 0.9)
 
-                VStack(alignment: .leading, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: Spacing.sm) {
+                    VStack(alignment: .leading, spacing: Spacing.xxs) {
                         Text("Screen Time")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(Typography.caption)
                             .foregroundColor(.uwTextSecondary)
 
                         Text(formatScreenTime())
-                            .font(.system(size: 24, weight: .bold))
+                            .font(Typography.title1)
                             .foregroundColor(.uwTextPrimary)
                     }
 
-                    HStack(spacing: 4) {
+                    HStack(spacing: Spacing.xs) {
                         Image(systemName: dailyGoalProgress >= 0.5 ? "arrow.down" : "arrow.up")
                             .font(.system(size: 11, weight: .bold))
                         Text(dailyGoalProgress >= 0.5 ? "On track" : "Keep going")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(Typography.caption)
+                            .fontWeight(.semibold)
                     }
                     .foregroundColor(dailyGoalProgress >= 0.5 ? .uwSuccess : .uwAccent)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
+                    .padding(.horizontal, Spacing.sm)
+                    .padding(.vertical, Spacing.xs)
                     .background(
                         Capsule()
                             .fill(dailyGoalProgress >= 0.5 ? Color.uwSuccess.opacity(0.12) : Color.uwAccent.opacity(0.12))
@@ -183,22 +184,14 @@ struct CalendarView: View {
 
                 Spacer()
             }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.uwCard)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(Color.uwBorder, lineWidth: 2)
-            )
-            .padding(.horizontal, 20)
+            .duoCard(padding: Spacing.md, cornerRadius: Radius.lg)
+            .padding(.horizontal, Spacing.lg)
         }
     }
 
     // MARK: - Tab Selector
     private var tabSelector: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Spacing.sm) {
             ForEach(CalendarTab.allCases, id: \.self) { tab in
                 Button {
                     withAnimation(DuoAnimation.tabSwitch) {
@@ -207,10 +200,11 @@ struct CalendarView: View {
                     DuoHaptics.selection()
                 } label: {
                     Text(tab.rawValue)
-                        .font(.system(size: 14, weight: selectedTab == tab ? .semibold : .medium))
+                        .font(Typography.subhead)
+                        .fontWeight(selectedTab == tab ? .semibold : .medium)
                         .foregroundColor(selectedTab == tab ? .uwPrimary : .uwTextSecondary)
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 16)
+                        .padding(.vertical, Spacing.sm)
+                        .padding(.horizontal, Spacing.md)
                         .background(
                             Capsule()
                                 .fill(selectedTab == tab ? Color.uwPrimary.opacity(0.12) : Color.clear)
@@ -220,7 +214,7 @@ struct CalendarView: View {
 
             Spacer()
         }
-        .padding(4)
+        .padding(Spacing.xs)
         .background(
             Capsule()
                 .fill(Color.uwCard)
@@ -234,41 +228,43 @@ struct CalendarView: View {
 
     // MARK: - Daily Content
     private var dailyContent: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Spacing.lg) {
             dateSelector
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.lg)
 
             usageChart
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.lg)
 
             dailyUsagePattern
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.lg)
 
             mostUsedAppsSection
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.lg)
         }
     }
 
     // MARK: - Daily Quests Section
     private var dailyQuestsSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             HStack {
                 Text("Daily Goals")
-                    .font(.system(size: 20, weight: .heavy))
+                    .font(Typography.title3)
                     .foregroundColor(.uwTextPrimary)
 
                 Spacer()
 
-                HStack(spacing: 4) {
+                HStack(spacing: Spacing.xs) {
                     Image(systemName: "clock")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(Typography.caption)
+                        .fontWeight(.bold)
                     Text("6 HOURS")
-                        .font(.system(size: 12, weight: .heavy))
+                        .font(Typography.caption)
+                        .fontWeight(.heavy)
                 }
                 .foregroundColor(.uwWarning)
             }
 
-            VStack(spacing: 10) {
+            VStack(spacing: Spacing.sm) {
                 DuoQuestCard(
                     title: "Stay under screen time goal",
                     progress: dailyGoalProgress,
@@ -324,12 +320,13 @@ struct CalendarView: View {
 
     // MARK: - Date Selector
     private var dateSelector: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             Text(formatMonthYear(selectedDate))
-                .font(.system(size: 14, weight: .semibold))
+                .font(Typography.subhead)
+                .fontWeight(.semibold)
                 .foregroundColor(.uwTextSecondary)
 
-            HStack(spacing: 8) {
+            HStack(spacing: Spacing.sm) {
                 ForEach(Array(getWeekDates().enumerated()), id: \.element) { index, date in
                     datePill(date: date, index: index)
                 }
@@ -348,13 +345,14 @@ struct CalendarView: View {
             }
             DuoHaptics.selection()
         } label: {
-            VStack(spacing: 4) {
+            VStack(spacing: Spacing.xs) {
                 Text(formatDayName(date))
-                    .font(.system(size: 10, weight: .medium))
+                    .font(Typography.caption)
                     .foregroundColor(isSelected ? .white.opacity(0.9) : .uwTextTertiary)
 
                 Text(formatDayNumber(date))
-                    .font(.system(size: 16, weight: isSelected ? .bold : .medium))
+                    .font(Typography.callout)
+                    .fontWeight(isSelected ? .bold : .medium)
                     .foregroundColor(isSelected ? .white : (isToday ? .uwPrimary : .uwTextPrimary))
 
                 // Today indicator
@@ -363,13 +361,13 @@ struct CalendarView: View {
                     .frame(width: 4, height: 4)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
+            .padding(.vertical, Spacing.sm)
             .background(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: Radius.md)
                     .fill(isSelected ? Color.uwPrimary : Color.uwCard)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: Radius.md)
                     .strokeBorder(isSelected ? Color.clear : Color.uwBorder, lineWidth: 1)
             )
         }
@@ -395,12 +393,12 @@ struct CalendarView: View {
 
     // MARK: - Daily Usage Pattern (Stats Cards)
     private var dailyUsagePattern: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             Text("Today's Stats")
-                .font(.system(size: 18, weight: .bold))
+                .font(Typography.headline)
                 .foregroundColor(.uwTextPrimary)
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: Spacing.md) {
                 statsCard(
                     icon: "sun.max.fill",
                     iconColor: .uwAccent,
@@ -435,36 +433,36 @@ struct CalendarView: View {
 
     // MARK: - Stats Card
     private func statsCard(icon: String, iconColor: Color, value: String, label: String) -> some View {
-        HStack(spacing: 12) {
+        HStack(spacing: Spacing.md) {
             ZStack {
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: Radius.sm)
                     .fill(iconColor.opacity(0.12))
-                    .frame(width: 40, height: 40)
+                    .frame(width: 44, height: 44)
 
                 Image(systemName: icon)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold))
                     .foregroundColor(iconColor)
             }
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: Spacing.xxs) {
                 Text(value)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(Typography.headline)
                     .foregroundColor(.uwTextPrimary)
 
                 Text(label)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(Typography.caption)
                     .foregroundColor(.uwTextSecondary)
             }
 
             Spacer()
         }
-        .padding(14)
+        .padding(Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: Radius.lg)
                 .fill(Color.uwCard)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: Radius.lg)
                 .strokeBorder(Color.uwBorder, lineWidth: 1)
         )
     }
@@ -472,20 +470,20 @@ struct CalendarView: View {
     // MARK: - Tasks Section
     @ViewBuilder
     private var tasksSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             HStack {
                 Text("Tasks")
-                    .font(.system(size: 20, weight: .heavy))
+                    .font(Typography.title3)
                     .foregroundColor(.uwTextPrimary)
 
                 Spacer()
 
                 Text("\(completedTasksToday.count)/\(tasksForSelectedDate.count)")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(Typography.headline)
                     .foregroundColor(.uwPrimary)
             }
 
-            VStack(spacing: 8) {
+            VStack(spacing: Spacing.sm) {
                 ForEach(tasksForSelectedDate, id: \.objectID) { task in
                     taskRow(task: task)
                 }
@@ -494,7 +492,7 @@ struct CalendarView: View {
     }
 
     private func taskRow(task: TaskEntity) -> some View {
-        HStack(spacing: 14) {
+        HStack(spacing: Spacing.md) {
             Button {
                 toggleTask(task)
                 DuoHaptics.success()
@@ -525,19 +523,20 @@ struct CalendarView: View {
             .buttonStyle(PlainButtonStyle())
 
             Text(task.taskTitle ?? "Untitled")
-                .font(.system(size: 16, weight: task.taskIsCompleted ? .medium : .bold))
+                .font(Typography.callout)
+                .fontWeight(task.taskIsCompleted ? .medium : .bold)
                 .foregroundColor(task.taskIsCompleted ? .uwTextSecondary : .uwTextPrimary)
                 .strikethrough(task.taskIsCompleted, color: .uwTextSecondary)
 
             Spacer()
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
+        .padding(.vertical, Spacing.md)
+        .padding(.horizontal, Spacing.md)
         .background(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: Radius.lg)
                 .fill(Color.uwCard)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 14)
+                    RoundedRectangle(cornerRadius: Radius.lg)
                         .strokeBorder(Color.uwCardShadow.opacity(0.3), lineWidth: 2)
                 )
         )
@@ -545,9 +544,9 @@ struct CalendarView: View {
 
     // MARK: - Most Used Apps Section
     private var mostUsedAppsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             Text("Most used apps")
-                .font(.system(size: 18, weight: .heavy))
+                .font(Typography.headline)
                 .foregroundColor(.uwTextPrimary)
 
             DeviceActivityReport(
@@ -561,21 +560,21 @@ struct CalendarView: View {
 
     // MARK: - Weekly Content
     private var weeklyContent: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Spacing.lg) {
             weekSelector
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.lg)
 
             progressChart
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.lg)
 
             weeklySummaryCards
-                .padding(.horizontal, 20)
+                .padding(.horizontal, Spacing.lg)
         }
     }
 
     // MARK: - Week Selector
     private var weekSelector: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: Spacing.sm) {
             ForEach(getWeeks(), id: \.self) { week in
                 weekPill(week: week)
             }
@@ -584,7 +583,6 @@ struct CalendarView: View {
 
     private func weekPill(week: Date) -> some View {
         let isSelected = isSameWeek(week, as: selectedWeek)
-        let weekRange = getWeekRange(for: week)
         let weekNumber = Calendar.current.component(.weekOfYear, from: week)
 
         return Button {
@@ -594,10 +592,11 @@ struct CalendarView: View {
             DuoHaptics.selection()
         } label: {
             Text("W\(weekNumber)")
-                .font(.system(size: 14, weight: isSelected ? .heavy : .medium))
+                .font(Typography.subhead)
+                .fontWeight(isSelected ? .heavy : .medium)
                 .foregroundColor(isSelected ? .white : .uwTextPrimary)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
+                .padding(.vertical, Spacing.md)
                 .background(
                     ZStack {
                         if isSelected {
@@ -619,17 +618,17 @@ struct CalendarView: View {
 
     // MARK: - Progress Chart
     private var progressChart: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             Text("Your progress")
-                .font(.system(size: 16, weight: .bold))
+                .font(Typography.headline)
                 .foregroundColor(.uwTextPrimary)
 
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: Radius.md)
                 .fill(Color.uwTextTertiary.opacity(0.2))
                 .frame(height: 200)
                 .overlay(
                     Text("Progress Chart")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(Typography.subhead)
                         .foregroundColor(.uwTextSecondary)
                 )
         }
@@ -638,43 +637,43 @@ struct CalendarView: View {
 
     // MARK: - Weekly Summary Cards
     private var weeklySummaryCards: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: Spacing.md) {
             Text("Weekly Summary")
-                .font(.system(size: 16, weight: .bold))
+                .font(Typography.headline)
                 .foregroundColor(.uwTextPrimary)
 
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: Spacing.md) {
                 Text("Total Time Saved")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(Typography.subhead)
                     .foregroundColor(.uwTextSecondary)
 
                 Text(formatTimeSaved())
-                    .font(.system(size: 32, weight: .heavy))
+                    .font(Typography.largeTitle)
                     .foregroundColor(.uwAccent)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .duoCard()
 
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: Spacing.md) {
+                VStack(alignment: .leading, spacing: Spacing.md) {
                     Text("Most Distracted")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(Typography.footnote)
                         .foregroundColor(.uwTextSecondary)
 
                     Text(formatMostDistractedTime())
-                        .font(.system(size: 24, weight: .heavy))
+                        .font(Typography.title1)
                         .foregroundColor(.uwTextPrimary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .duoCard()
 
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: Spacing.md) {
                     Text("Avg Screen Time")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(Typography.footnote)
                         .foregroundColor(.uwTextSecondary)
 
                     Text(formatAvgScreenTime())
-                        .font(.system(size: 24, weight: .heavy))
+                        .font(Typography.title1)
                         .foregroundColor(.uwTextPrimary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -685,28 +684,28 @@ struct CalendarView: View {
 
     // MARK: - Trends Content
     private var trendsContent: some View {
-        VStack(spacing: 20) {
-            VStack(spacing: 16) {
+        VStack(spacing: Spacing.lg) {
+            VStack(spacing: Spacing.md) {
                 Image(systemName: "chart.line.uptrend.xyaxis")
                     .font(.system(size: 60, weight: .medium))
                     .foregroundColor(.uwTextTertiary)
 
                 Text("Trends coming soon")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(Typography.headline)
                     .foregroundColor(.uwTextSecondary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 60)
+            .padding(.vertical, Spacing.xxl)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, Spacing.lg)
     }
 
     // MARK: - Authorization Section
     private var authorizationSection: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: Spacing.xl) {
             Spacer()
 
-            VStack(spacing: 24) {
+            VStack(spacing: Spacing.lg) {
                 ZStack {
                     Circle()
                         .fill(Color.uwPrimary.opacity(0.15))
@@ -717,13 +716,13 @@ struct CalendarView: View {
                         .foregroundColor(.uwPrimary)
                 }
 
-                VStack(spacing: 12) {
+                VStack(spacing: Spacing.md) {
                     Text("Screen Time Access")
-                        .font(.system(size: 28, weight: .heavy))
+                        .font(Typography.title1)
                         .foregroundColor(.uwTextPrimary)
 
                     Text("Track your app usage and stay focused.")
-                        .font(.system(size: 16))
+                        .font(Typography.body)
                         .foregroundColor(.uwTextSecondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
@@ -733,20 +732,20 @@ struct CalendarView: View {
                     appStateManager.requestAuthorizationIfNeeded()
                     DuoHaptics.buttonTap()
                 } label: {
-                    HStack(spacing: 8) {
+                    HStack(spacing: Spacing.sm) {
                         Text("Grant Access")
                         Image(systemName: "arrow.right")
                             .font(.system(size: 16, weight: .bold))
                     }
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, Spacing.md)
                 }
                 .buttonStyle(DuoPrimaryButton())
-                .padding(.horizontal, 40)
+                .padding(.horizontal, Spacing.xxl)
             }
             .duoCard()
-            .padding(.horizontal, 20)
+            .padding(.horizontal, Spacing.lg)
 
             Spacer()
         }

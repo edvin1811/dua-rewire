@@ -2,7 +2,7 @@
 //  iOS26TabBar.swift
 //  sharp
 //
-//  Clean, branded tab bar with two-color system
+//  Clean, branded tab bar with Duolingo design system
 //
 
 import SwiftUI
@@ -38,7 +38,7 @@ struct iOS26TabBar: View {
     ]
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: Spacing.md) {
             // Main tabs container
             HStack(spacing: 0) {
                 ForEach(mainTabs) { tab in
@@ -55,14 +55,14 @@ struct iOS26TabBar: View {
                     )
                 }
             }
-            .padding(8)
+            .padding(Spacing.sm)
             .background(
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: Radius.lg + 4)
                     .fill(Color.uwCard)
                     .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: Radius.lg + 4)
                     .strokeBorder(Color.uwBorder, lineWidth: 1)
             )
             .scaleEffect(showBar ? 1 : 0.95)
@@ -76,8 +76,8 @@ struct iOS26TabBar: View {
             .scaleEffect(showBar ? 1 : 0.9)
             .opacity(showBar ? 1 : 0)
         }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 8)
+        .padding(.horizontal, Spacing.md)
+        .padding(.bottom, Spacing.sm)
         .onAppear {
             withAnimation(DuoAnimation.cardBounce.delay(0.1)) {
                 showBar = true
@@ -97,11 +97,11 @@ struct TabButton: View {
 
     var body: some View {
         Button(action: onTap) {
-            VStack(spacing: 2) {
+            VStack(spacing: Spacing.xxs) {
                 ZStack {
                     // Selected: filled rounded rect with primary blue
                     if isSelected {
-                        RoundedRectangle(cornerRadius: 12)
+                        RoundedRectangle(cornerRadius: Radius.md)
                             .fill(Color.uwPrimary.opacity(0.15))
                             .frame(width: 52, height: 40)
                             .matchedGeometryEffect(id: "tabIndicator", in: namespace)
@@ -115,55 +115,58 @@ struct TabButton: View {
                 .frame(height: 40)
 
                 Text(tab.title)
-                    .font(.system(size: 10, weight: isSelected ? .bold : .medium))
+                    .font(Typography.caption)
+                    .fontWeight(isSelected ? .bold : .medium)
                     .foregroundColor(isSelected ? .uwPrimary : .uwTextTertiary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 4)
+            .padding(.vertical, Spacing.xs)
             .scaleEffect(isPressed ? 0.95 : 1.0)
-            .animation(.spring(response: 0.2, dampingFraction: 0.7), value: isSelected)
+            .animation(DuoAnimation.microBounce, value: isSelected)
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
-                    withAnimation(.easeOut(duration: 0.08)) { isPressed = true }
+                    withAnimation(DuoAnimation.quick) { isPressed = true }
                 }
                 .onEnded { _ in
-                    withAnimation(.spring(response: 0.2, dampingFraction: 0.7)) { isPressed = false }
+                    withAnimation(DuoAnimation.microBounce) { isPressed = false }
                 }
         )
     }
 }
 
-// MARK: - Quick Add Button (Duolingo 3D lime green button)
+// MARK: - Quick Add Button (Duolingo 3D lime green button with 4px shadow)
 struct QuickAddButton: View {
     let onTap: () -> Void
     @State private var isPressed = false
 
+    private let shadowOffset: CGFloat = 4 // Exact Duolingo spec
+
     var body: some View {
         Button(action: onTap) {
             ZStack {
-                // 3D Shadow - darker green
+                // 3D Shadow - darker green (4px offset per spec)
                 Circle()
                     .fill(Color.uwSuccessDark)
                     .frame(width: 56, height: 56)
-                    .offset(y: isPressed ? 0 : 4)
+                    .offset(y: isPressed ? 0 : shadowOffset)
 
                 // Main button - vibrant lime green
                 Circle()
                     .fill(Color.uwSuccess)
                     .frame(width: 56, height: 56)
-                    .offset(y: isPressed ? 3 : 0)
+                    .offset(y: isPressed ? shadowOffset - 1 : 0)
 
                 // Icon - white plus
                 Image(systemName: "plus")
                     .font(.system(size: 24, weight: .black))
                     .foregroundColor(.white)
-                    .offset(y: isPressed ? 3 : 0)
+                    .offset(y: isPressed ? shadowOffset - 1 : 0)
             }
-            .scaleEffect(isPressed ? 0.95 : 1.0)
-            .animation(.spring(response: 0.15, dampingFraction: 0.5), value: isPressed)
+            .scaleEffect(isPressed ? 0.98 : 1.0)  // Subtle shrink per guidelines
+            .animation(DuoAnimation.buttonPress, value: isPressed)
         }
         .buttonStyle(PlainButtonStyle())
         .simultaneousGesture(

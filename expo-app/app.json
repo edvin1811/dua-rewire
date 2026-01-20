@@ -17,14 +17,28 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.unwire.focus"
+      "bundleIdentifier": "com.unwire.focus",
+      "infoPlist": {
+        "NSFamilyControlsUsageDescription": "Unwire needs access to Screen Time to help you track and manage your app usage for better focus.",
+        "UIBackgroundModes": ["processing", "fetch"]
+      },
+      "entitlements": {
+        "com.apple.developer.family-controls": true,
+        "com.apple.security.application-groups": ["group.com.unwire.focus"]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#131F24"
       },
-      "package": "com.unwire.focus"
+      "package": "com.unwire.focus",
+      "permissions": [
+        "android.permission.PACKAGE_USAGE_STATS",
+        "android.permission.QUERY_ALL_PACKAGES",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.FOREGROUND_SERVICE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -33,10 +47,16 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "./plugins/withScreenTimeAndWidgets"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
     }
   }
 }
